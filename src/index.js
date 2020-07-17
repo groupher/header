@@ -33,7 +33,7 @@ class Header {
    *   config - user config for Tool
    *   api - Editor.js API
    */
-  constructor({data, config, api}) {
+  constructor({ data, config, api }) {
     this.api = api;
 
     /**
@@ -112,7 +112,7 @@ class Header {
     let holder = document.createElement('DIV');
 
     /** Add type selectors */
-    this.levels.forEach( level => {
+    this.levels.forEach(level => {
       let selectTypeButton = document.createElement('SPAN');
 
       selectTypeButton.classList.add(this._CSS.settingsButton);
@@ -434,7 +434,7 @@ class Header {
   static get toolbox() {
     return {
       icon: '<svg width="11" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M7.6 8.15H2.25v4.525a1.125 1.125 0 0 1-2.25 0V1.125a1.125 1.125 0 1 1 2.25 0V5.9H7.6V1.125a1.125 1.125 0 0 1 2.25 0v11.55a1.125 1.125 0 0 1-2.25 0V8.15z"/></svg>',
-      title: '标题 (Header)'
+      title: '标题'
     };
   }
 }
