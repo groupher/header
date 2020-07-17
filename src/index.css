@@ -1,11 +1,33 @@
 /**
  * Plugin styles
  */
+.ce-header-wrapper {
+  position: relative;
+}
+
 .ce-header {
   padding: 1em 0;
   margin: 0;
-  margin-bottom: -0.9em;
   line-height: 1.5em;
+  outline: none;
+}
+
+.cd-header-sub-title {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  font-size: 18px;
+  width: 200px;
+  color: grey;
+  outline: none;
+}
+
+.cd-header-sup-title {
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 200px;
+  color: grey;
   outline: none;
 }
 
