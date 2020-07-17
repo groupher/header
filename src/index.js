@@ -3,10 +3,13 @@
  */
 import { initEventBus, EVENTS, make } from "@groupher/editor-utils";
 
+import ToolboxIcon from './icons/ToolboxIcon.svg'
+
 import H1Icon from './icons/h1.svg'
 import H2Icon from './icons/h2.svg'
 import H3Icon from './icons/h3.svg'
 import DeleteIcon from './icons/delete.svg'
+
 import "./index.css";
 
 /**
@@ -471,9 +474,8 @@ export default class Header {
    */
   static get toolbox() {
     return {
-      icon:
-        '<svg width="11" height="14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M7.6 8.15H2.25v4.525a1.125 1.125 0 0 1-2.25 0V1.125a1.125 1.125 0 1 1 2.25 0V5.9H7.6V1.125a1.125 1.125 0 0 1 2.25 0v11.55a1.125 1.125 0 0 1-2.25 0V8.15z"/></svg>',
-      title: "标题 (Header)",
+      icon: ToolboxIcon,
+      title: "标题",
     };
   }
 
