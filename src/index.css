@@ -12,6 +12,14 @@
   outline: none;
 }
 
+.cd-header-prefix {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: -25px;
+  cursor: pointer;
+}
+
 .cd-header-sub-title {
   position: absolute;
   top: 5px;
@@ -20,6 +28,10 @@
   width: 200px;
   color: grey;
   outline: none;
+}
+
+.cd-header-sub-title:hover .cd-header-prefix {
+  display: block;
 }
 
 .cd-header-sup-title {
