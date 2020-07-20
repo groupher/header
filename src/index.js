@@ -5,10 +5,14 @@ import { initEventBus, EVENTS, make } from "@groupher/editor-utils";
 
 import ToolboxIcon from './icons/ToolboxIcon.svg'
 
-import H1Icon from './icons/h1.svg'
-import H2Icon from './icons/h2.svg'
-import H3Icon from './icons/h3.svg'
-import DeleteIcon from './icons/delete.svg'
+import H1Icon from './icons/H1.svg'
+import H2Icon from './icons/H2.svg'
+import H3Icon from './icons/H3.svg'
+import EyeBrowIcon from './icons/EyeBrowPlusIcon.svg'
+
+import DeleteIcon from './icons/Delete.svg'
+
+import FooterEditIcon from './icons/FooterEditIcon.svg'
 
 import "./index.css";
 
@@ -54,8 +58,17 @@ export default class Header {
       settingsButton: this.api.styles.settingsButton,
       settingsButtonActive: this.api.styles.settingsButtonActive,
       wrapper: "ce-header-wrapper",
-      subTitle: "cd-header-sub-title",
-      supTitle: "cd-header-sup-title",
+      prefix: "ce-header-prefix",
+      subTitle: "ce-header-sub-title",
+      supTitle: "ce-header-sup-title",
+
+      eyebrowAdder: "ce-header-eyebrow-adder",
+      eyebrowAdderText: "ce-header-eyebrow-adder-text",
+
+      footerAdder: "ce-header-footer-adder",
+      footerAdderText: "ce-header-footer-adder-text",
+
+      editIcon: "ce-header-add-icon",
       tag: "ce-header",
     };
 
@@ -107,6 +120,38 @@ export default class Header {
     return newData;
   }
 
+  makeEyebrowAdder() {
+    const eyebrowAdder = make('div', this._CSS.eyebrowAdder)
+    const eyebrowAdderText = make('div', this._CSS.eyebrowAdderText, {
+      innerHTML: "眉标题",
+    })
+
+    const eyeBrowIcon = make('div', this._CSS.editIcon, {
+      innerHTML: EyeBrowIcon
+    })
+
+    eyebrowAdder.appendChild(eyeBrowIcon)
+    eyebrowAdder.appendChild(eyebrowAdderText)
+
+    return eyebrowAdder
+  }
+
+  makeFooterAdder() {
+    const footerAdder = make('div', this._CSS.footerAdder)
+    const footerAdderText = make('div', this._CSS.footerAdderText, {
+      innerHTML: "脚标题",
+    })
+
+    const footerEditIcon = make('div', this._CSS.editIcon, {
+      innerHTML: FooterEditIcon
+    })
+
+    footerAdder.appendChild(footerEditIcon)
+    footerAdder.appendChild(footerAdderText)
+
+    return footerAdder
+  }
+
   /**
    * Return Tool's view
    * @returns {HTMLHeadingElement}
@@ -120,7 +165,7 @@ export default class Header {
       innerHTML: "sub title"
     })
 
-    const deleteBtn = make('div', "cd-header-prefix", {
+    const deleteBtn = make('div', this._CSS.prefix, {
       innerHTML: DeleteIcon
     })
 
@@ -131,12 +176,13 @@ export default class Header {
       innerHTML: "sup title"
     })
 
-    wrapper.appendChild(subTitle)
+    // wrapper.appendChild(subTitle)
+    wrapper.appendChild(this.makeEyebrowAdder())
     wrapper.appendChild(this._element)
-    wrapper.appendChild(supTitle)
+    // wrapper.appendChild(supTitle)
+    wrapper.appendChild(this.makeFooterAdder())
 
     return wrapper
-    // return this._element;
   }
 
   /**
@@ -187,6 +233,20 @@ export default class Header {
        */
       this.settingsButtons.push(selectTypeButton);
     });
+
+    // TODO: 
+    const eyeBrowButton = make('span', this._CSS.settingsButton, {
+      innerHTML: EyeBrowIcon,
+    })
+    this.api.tooltip.onHover(eyeBrowButton, "眉标题", { placement: "top" });
+
+    const footerEditButton = make('span', this._CSS.settingsButton, {
+      innerHTML: FooterEditIcon,
+    })
+    this.api.tooltip.onHover(footerEditButton, "脚标题", { placement: "top" });
+
+    holder.appendChild(eyeBrowButton);
+    holder.appendChild(footerEditButton);
 
     return holder;
   }

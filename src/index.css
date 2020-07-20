@@ -13,29 +13,74 @@
   outline: none;
 }
 
-.cd-header-prefix {
-  display: none;
+.ce-header-prefix {
+  visibility: hidden;
   position: absolute;
   top: 4px;
-  left: -25px;
+  left: 0px;
   cursor: pointer;
+  transition: all .3s;
 }
 
-.cd-header-sub-title {
+.ce-header-prefix:hover svg {
+  fill: tomato;
+}
+
+.ce-header-sub-title {
   position: absolute;
   top: 5px;
-  left: 0;
+  left: -30px;
+  padding-left: 30px;
   font-size: 18px;
   width: 200px;
   color: grey;
   outline: none;
 }
 
-.cd-header-sub-title:hover .cd-header-prefix {
-  display: block;
+.ce-header-sub-title:hover .ce-header-prefix {
+  visibility: visible;
 }
 
-.cd-header-sup-title {
+.ce-header-eyebrow-adder {
+  position: absolute;
+  top: 10px;
+  left: -30px;
+  height: 38px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.ce-header-eyebrow-adder:hover .ce-header-add-icon {
+  opacity: 1;
+}
+
+.ce-header-eyebrow-adder:hover .ce-header-eyebrow-adder-text {
+  opacity: 1;
+}
+
+.ce-header-eyebrow-adder-text {
+  opacity: 0;
+  color: grey;
+  font-size: 16px;
+  margin-left: 10px;
+  margin-top: -1px;
+  transition: all .3s;
+}
+
+.ce-header-add-icon {
+  opacity: 0;
+}
+
+.ce-header-add-icon svg{
+  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  color: grey;
+  outline: none;
+  cursor: pointer;
+}
+
+.ce-header-sup-title {
   position: absolute;
   left: 0;
   bottom: 5px;
@@ -43,6 +88,39 @@
   color: grey;
   outline: none;
 }
+
+.ce-header-sup-title:hover .ce-header-prefix {
+  visibility: visible;
+}
+
+.ce-header-footer-adder {
+  position: absolute;
+  bottom: 0px;
+  left: -30px;
+  height: 35px;
+  display: flex;
+  align-items: flex-end;
+  /* border: 1px solid green; */
+}
+
+.ce-header-footer-adder:hover .ce-header-add-icon {
+  opacity: 1;
+}
+
+.ce-header-footer-adder:hover .ce-header-footer-adder-text {
+  opacity: 1;
+}
+
+.ce-header-footer-adder-text {
+  opacity: 0;
+  color: grey;
+  font-size: 16px;
+  margin-left: 10px;
+  margin-top: -1px;
+  transition: all .3s;
+}
+
+
 
 .ce-header p,
 .ce-header div{
