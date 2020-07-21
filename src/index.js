@@ -53,14 +53,15 @@ export default class Header {
      * Styles
      * @type {Object}
      */
-    this._CSS = {
+    this.CSS = {
       block: this.api.styles.block,
       settingsButton: this.api.styles.settingsButton,
       settingsButtonActive: this.api.styles.settingsButtonActive,
       wrapper: "ce-header-wrapper",
       prefix: "ce-header-prefix",
-      subTitle: "ce-header-sub-title",
-      supTitle: "ce-header-sup-title",
+      subTitleInput: 'ce-header-sub-title-input',
+      eyebrowTitle: "ce-header-eyebrow-title",
+      footerTitle: "ce-header-footer-title",
 
       eyebrowAdder: "ce-header-eyebrow-adder",
       eyebrowAdderText: "ce-header-eyebrow-adder-text",
@@ -121,12 +122,12 @@ export default class Header {
   }
 
   makeEyebrowAdder() {
-    const eyebrowAdder = make('div', this._CSS.eyebrowAdder)
-    const eyebrowAdderText = make('div', this._CSS.eyebrowAdderText, {
+    const eyebrowAdder = make('div', this.CSS.eyebrowAdder)
+    const eyebrowAdderText = make('div', this.CSS.eyebrowAdderText, {
       innerHTML: "眉标题",
     })
 
-    const eyeBrowIcon = make('div', this._CSS.editIcon, {
+    const eyeBrowIcon = make('div', this.CSS.editIcon, {
       innerHTML: EyeBrowIcon
     })
 
@@ -137,12 +138,12 @@ export default class Header {
   }
 
   makeFooterAdder() {
-    const footerAdder = make('div', this._CSS.footerAdder)
-    const footerAdderText = make('div', this._CSS.footerAdderText, {
+    const footerAdder = make('div', this.CSS.footerAdder)
+    const footerAdderText = make('div', this.CSS.footerAdderText, {
       innerHTML: "脚标题",
     })
 
-    const footerEditIcon = make('div', this._CSS.editIcon, {
+    const footerEditIcon = make('div', this.CSS.editIcon, {
       innerHTML: FooterEditIcon
     })
 
@@ -152,6 +153,39 @@ export default class Header {
     return footerAdder
   }
 
+  makeTitle(type = 'footer') {
+    const css = type === 'footer' ? this.CSS.footerTitle : this.CSS.eyebrowTitle
+    const placeholder = type === 'footer' ? '输入脚标题' : '输入眉标题'
+
+    const title = make('div', css)
+
+    const titleInput = make('div', this.CSS.subTitleInput, {
+      contentEditable: true,
+      innerHTML: placeholder,
+      'data-placeholder': placeholder,
+    })
+
+    // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
+    titleInput.addEventListener('focus', function (e) {
+      const value = e.target.innerHTML;
+      value === placeholder && (e.target.innerHTML = '');
+    });
+
+    titleInput.addEventListener('blur', function (e) {
+      const value = e.target.innerHTML;
+      value === '' && (e.target.innerHTML = placeholder);
+    });
+
+    const deleteBtn = make('div', this.CSS.prefix, {
+      innerHTML: DeleteIcon
+    })
+
+    title.appendChild(deleteBtn)
+    title.appendChild(titleInput)
+
+    return title
+  }
+
   /**
    * Return Tool's view
    * @returns {HTMLHeadingElement}
@@ -159,28 +193,13 @@ export default class Header {
    */
   render() {
     // this.emojiContainer.appendChild(this.emojiInput)
-    const wrapper = make('div', this._CSS.wrapper)
-    const subTitle = make('div', this._CSS.subTitle, {
-      contentEditable: true,
-      innerHTML: "sub title"
-    })
+    const wrapper = make('div', this.CSS.wrapper)
 
-    const deleteBtn = make('div', this._CSS.prefix, {
-      innerHTML: DeleteIcon
-    })
-
-    subTitle.appendChild(deleteBtn)
-
-    const supTitle = make('div', this._CSS.supTitle, {
-      contentEditable: true,
-      innerHTML: "sup title"
-    })
-
-    // wrapper.appendChild(subTitle)
-    wrapper.appendChild(this.makeEyebrowAdder())
+    wrapper.appendChild(this.makeTitle('eyebrow'))
+    // wrapper.appendChild(this.makeEyebrowAdder())
     wrapper.appendChild(this._element)
-    // wrapper.appendChild(supTitle)
-    wrapper.appendChild(this.makeFooterAdder())
+    wrapper.appendChild(this.makeTitle('footer'))
+    // wrapper.appendChild(this.makeFooterAdder())
 
     return wrapper
   }
@@ -197,13 +216,13 @@ export default class Header {
     this.levels.forEach((level) => {
       let selectTypeButton = document.createElement("SPAN");
 
-      selectTypeButton.classList.add(this._CSS.settingsButton);
+      selectTypeButton.classList.add(this.CSS.settingsButton);
 
       /**
        * Highlight current level button
        */
       if (this.currentLevel.number === level.number) {
-        selectTypeButton.classList.add(this._CSS.settingsButtonActive);
+        selectTypeButton.classList.add(this.CSS.settingsButtonActive);
       }
 
       /**
@@ -223,6 +242,7 @@ export default class Header {
         this.setLevel(level.number);
       });
 
+      this.api.tooltip.onHover(selectTypeButton, `${level.number}级标题`, { placement: "top" });
       /**
        * Append settings button to holder
        */
@@ -235,12 +255,12 @@ export default class Header {
     });
 
     // TODO: 
-    const eyeBrowButton = make('span', this._CSS.settingsButton, {
+    const eyeBrowButton = make('span', this.CSS.settingsButton, {
       innerHTML: EyeBrowIcon,
     })
     this.api.tooltip.onHover(eyeBrowButton, "眉标题", { placement: "top" });
 
-    const footerEditButton = make('span', this._CSS.settingsButton, {
+    const footerEditButton = make('span', this.CSS.settingsButton, {
       innerHTML: FooterEditIcon,
     })
     this.api.tooltip.onHover(footerEditButton, "脚标题", { placement: "top" });
@@ -266,7 +286,7 @@ export default class Header {
      */
     this.settingsButtons.forEach((button) => {
       button.classList.toggle(
-        this._CSS.settingsButtonActive,
+        this.CSS.settingsButtonActive,
         parseInt(button.dataset.level) === level
       );
     });
@@ -410,7 +430,7 @@ export default class Header {
     /**
      * Add styles class
      */
-    tag.classList.add(this._CSS.tag);
+    tag.classList.add(this.CSS.tag);
 
     /**
      * Make tag editable
