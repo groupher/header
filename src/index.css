@@ -14,12 +14,11 @@
 }
 
 .ce-header-prefix {
-  /* visibility: hidden; */
+  visibility: hidden;
   position: absolute;
   top: 4px;
   left: 0px;
   cursor: pointer;
-  transition: all 0.3s;
 }
 
 .ce-header-prefix:hover svg {
