@@ -14,12 +14,12 @@
 }
 
 .ce-header-prefix {
-  visibility: hidden;
+  /* visibility: hidden; */
   position: absolute;
   top: 4px;
   left: 0px;
   cursor: pointer;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .ce-header-prefix:hover svg {
@@ -28,6 +28,7 @@
 
 .ce-header-sub-title-input {
   font-size: 16px;
+  line-height: 24px;
   outline: none;
 }
 
@@ -35,9 +36,10 @@
   position: absolute;
   top: 5px;
   left: -30px;
+  /* display: flex;
+  align-items: center; */
   padding-left: 30px;
   width: 100%;
-  /* min-width: 200px; */
   color: grey;
   outline: none;
 }
@@ -73,14 +75,14 @@
   font-size: 16px;
   margin-left: 10px;
   margin-top: -1px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .ce-header-add-icon {
   opacity: 0;
 }
 
-.ce-header-add-icon svg{
+.ce-header-add-icon svg {
   font-size: 18px;
   width: 20px;
   height: 20px;
@@ -94,7 +96,7 @@
   left: -30px;
   padding-left: 30px;
   bottom: 5px;
-  width: 200px;
+  width: 100%;
   color: grey;
   outline: none;
 }
@@ -114,7 +116,6 @@
   height: 35px;
   display: flex;
   align-items: flex-end;
-  /* border: 1px solid green; */
 }
 
 .ce-header-footer-adder:hover .ce-header-add-icon {
@@ -131,13 +132,11 @@
   font-size: 16px;
   margin-left: 10px;
   margin-top: -1px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
-
-
 .ce-header p,
-.ce-header div{
+.ce-header div {
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -145,9 +144,10 @@
 /**
  * Styles for Plugin icon in Toolbar
  */
-.ce-header__icon {}
+.ce-header__icon {
+}
 
-.ce-header[contentEditable=true][data-placeholder]::before{
+.ce-header[contentEditable="true"][data-placeholder]::before {
   position: absolute;
   content: attr(data-placeholder);
   color: #707684;
@@ -155,10 +155,10 @@
   opacity: 0;
 }
 
-.ce-header[contentEditable=true][data-placeholder]:empty::before {
+.ce-header[contentEditable="true"][data-placeholder]:empty::before {
   opacity: 1;
 }
 
-.ce-header[contentEditable=true][data-placeholder]:empty:focus::before {
+.ce-header[contentEditable="true"][data-placeholder]:empty:focus::before {
   opacity: 0;
 }
