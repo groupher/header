@@ -69,7 +69,7 @@ export default class Header {
       footerAdder: "ce-header-footer-adder",
       footerAdderText: "ce-header-footer-adder-text",
 
-      editIcon: "ce-header-add-icon",
+      addIcon: "ce-header-add-icon",
       tag: "ce-header",
     };
 
@@ -106,6 +106,7 @@ export default class Header {
      * @private
      */
     this._element = this.getTag();
+    this.wrapper = null
     this.eventBus = initEventBus();
   }
 
@@ -134,7 +135,7 @@ export default class Header {
       innerHTML: "眉标题",
     });
 
-    const eyeBrowIcon = make("div", this.CSS.editIcon, {
+    const eyeBrowIcon = make("div", this.CSS.addIcon, {
       innerHTML: EyeBrowIcon,
     });
 
@@ -150,7 +151,7 @@ export default class Header {
       innerHTML: "脚标题",
     });
 
-    const footerEditIcon = make("div", this.CSS.editIcon, {
+    const footerEditIcon = make("div", this.CSS.addIcon, {
       innerHTML: FooterEditIcon,
     });
 
@@ -195,26 +196,118 @@ export default class Header {
   }
 
   /**
+   * rebuild whole block with eyebrow adder active
+   * @public
+   */
+  buildEyebrowAdder() {
+    const wrapper = make("div", this.CSS.wrapper);
+    this.eyebrowElement = this.makeEyebrowAdder();
+
+    this.eyebrowElement.addEventListener("click", () => {
+      this.buildEyebrowTitle()
+    });
+
+    wrapper.appendChild(this.eyebrowElement);
+    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this.footerElement);
+
+    this.wrapper.replaceWith(wrapper)
+    this.wrapper = wrapper
+  }
+
+  /**
+   * rebuild whole block with footer adder active
+   * @public
+   */
+  buildFooterAdder() {
+    const wrapper = make("div", this.CSS.wrapper);
+    this.footerElement = this.makeFooterAdder();
+
+    this.footerElement.addEventListener("click", () => {
+      this.buildFooterTitle()
+    });
+
+    wrapper.appendChild(this.eyebrowElement);
+    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this.footerElement);
+
+    this.wrapper.replaceWith(wrapper)
+    this.wrapper = wrapper
+  }
+
+  /**
+   * rebuild whole block with eyebrow title active
+   * @public
+   */
+  buildEyebrowTitle() {
+    const wrapper = make("div", this.CSS.wrapper);
+    this.eyebrowElement = this.makeTitle("eyebrow");
+
+    const deleteBtn = this.eyebrowElement.querySelector(`.${this.CSS.prefix}`)
+    deleteBtn.addEventListener("click", () => {
+      this.buildEyebrowAdder()
+    });
+
+    wrapper.appendChild(this.eyebrowElement);
+    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this.footerElement);
+
+    this.wrapper.replaceWith(wrapper)
+    this.wrapper = wrapper
+
+    const eyebrowInput = this.eyebrowElement.querySelector(`.${this.CSS.subTitleInput}`)
+    eyebrowInput.focus()
+  }
+
+  /**
+   * rebuild whole block with footer title active
+   * @public
+   */
+  buildFooterTitle() {
+    const wrapper = make("div", this.CSS.wrapper);
+    this.footerElement = this.makeTitle("footer");
+
+    const deleteBtn = this.footerElement.querySelector(`.${this.CSS.prefix}`)
+    deleteBtn.addEventListener("click", () => {
+      this.buildFooterAdder()
+    });
+
+    wrapper.appendChild(this.eyebrowElement);
+    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this.footerElement);
+
+    this.wrapper.replaceWith(wrapper)
+    this.wrapper = wrapper
+
+    const footerInput = this.footerElement.querySelector(`.${this.CSS.subTitleInput}`)
+    footerInput.focus()
+  }
+
+  /**
    * Return Tool's view
    * @returns {HTMLHeadingElement}
    * @public
    */
   render() {
-    const wrapper = make("div", this.CSS.wrapper);
+    this.wrapper = make("div", this.CSS.wrapper);
     // this.eyebrowElement = this.makeTitle("eyebrow");
     // this.footerElement = this.makeTitle("footer");
     this.eyebrowElement = this.makeEyebrowAdder();
     this.footerElement = this.makeFooterAdder();
 
     this.eyebrowElement.addEventListener("click", () => {
-      this.eyebrowElement.replaceWith(this.makeTitle("eyebrow"));
+      this.buildEyebrowTitle()
     });
 
-    wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this._element);
-    wrapper.appendChild(this.footerElement);
+    this.footerElement.addEventListener("click", () => {
+      this.buildFooterTitle()
+    });
 
-    return wrapper;
+    this.wrapper.appendChild(this.eyebrowElement);
+    this.wrapper.appendChild(this._element);
+    this.wrapper.appendChild(this.footerElement);
+
+    return this.wrapper;
   }
 
   /**
@@ -341,6 +434,8 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
+    console.log("## save: ", this.wrapper)
+
     return {
       text: toolsContent.innerHTML,
       level: this.currentLevel.number,
