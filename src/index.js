@@ -83,9 +83,6 @@ export default class Header {
     this.settingsButtons = [];
 
     // TODO:  document this
-    this.showEyebrowTitle = false;
-    this.showFooterTitle = false;
-
     this.eyebrowElement = null;
     this.footerElement = null;
 
@@ -138,8 +135,9 @@ export default class Header {
       this.buildEyebrowTitle()
     });
 
+    this._element = this.getTag()
     wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
     this.wrapper.replaceWith(wrapper)
@@ -158,8 +156,9 @@ export default class Header {
       this.buildFooterTitle()
     });
 
+    this._element = this.getTag()
     wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
     this.wrapper.replaceWith(wrapper)
@@ -179,10 +178,17 @@ export default class Header {
       this.buildEyebrowAdder()
     });
 
+    this._element = this.getTag()
     wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
+    // console.log("this.eyebrowElement.parentNode -> ", this.eyebrowElement.parentNode)
+    // this.eyebrowElement.parentNode.innerHTML = wrapper
+    // this.eyebrowElement.parentNode.replaceChild(wrapper, this.eyebrowElement);
+
+
+    // old
     this.wrapper.replaceWith(wrapper)
     this.wrapper = wrapper
 
@@ -202,8 +208,9 @@ export default class Header {
       this.buildFooterAdder()
     });
 
+    this._element = this.getTag()
     wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this.getTag());
+    wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
     this.wrapper.replaceWith(wrapper)
@@ -218,6 +225,7 @@ export default class Header {
    * @public
    */
   render() {
+    console.log("> rendering ...")
     this.wrapper = make("div", this.CSS.wrapper);
     // this.eyebrowElement = this.makeTitle("eyebrow");
     // this.footerElement = this.makeTitle("footer");
@@ -403,6 +411,24 @@ export default class Header {
   }
 
   /**
+   * restore eyebrow & footer title
+   * @private
+   */
+  restoreSubTitles() {
+    this.eyebrowElement.style.display = 'flex'
+    this.footerElement.style.display = 'flex'
+  }
+
+  /**
+   * show eyebrow & footer title
+   * @private
+   */
+  removeSubTitles() {
+    this.eyebrowElement.style.display = 'none'
+    this.footerElement.style.display = 'none'
+  }
+
+  /**
    * Store data in plugin:
    * - at the this._data property
    * - at the HTML
@@ -412,6 +438,12 @@ export default class Header {
    */
   set data(data) {
     this._data = this.normalizeData(data);
+
+    if (data.level !== 1) {
+      this.removeSubTitles()
+    } else {
+      this.restoreSubTitles()
+    }
 
     /**
      * If level is set and block in DOM
