@@ -52,7 +52,7 @@ export default class Ui {
 
   /**
    * make footer adder, include icon and hint text
-   * 
+   *
    * @returns {HTMLElement}
    * @public
    */
@@ -71,7 +71,6 @@ export default class Ui {
 
     return footerAdder;
   }
-
 
   makeTitle(type = "footer") {
     const css =
@@ -109,14 +108,18 @@ export default class Ui {
 
   /**
    * focus input inside of subtitle
-   * 
+   *
    * @param {HTMLElement} element
    * @returns {void}
    * @public
    */
   focusInput(element) {
-    const footerInput = element.querySelector(`.${this.CSS.subTitleInput}`)
-    footerInput.focus()
+    const footerInput = element.querySelector(`.${this.CSS.subTitleInput}`);
+    footerInput.focus();
+  }
+
+  isSubtitleInputActive(element) {
+    return !!element.querySelector(`.${this.CSS.subTitleInput}`);
   }
 
   // get data() {

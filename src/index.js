@@ -12,7 +12,7 @@ import H3Icon from "./icons/H3.svg";
 import EyeBrowIcon from "./icons/EyeBrowPlusIcon.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
-import Ui from './ui'
+import Ui from "./ui";
 import "./index.css";
 
 /**
@@ -92,7 +92,7 @@ export default class Header {
      * @private
      */
     this._element = this.getTag();
-    this.wrapper = null
+    this.wrapper = null;
     this.eventBus = initEventBus();
 
     this.ui = new Ui({
@@ -132,16 +132,16 @@ export default class Header {
     this.eyebrowElement = this.ui.makeEyebrowAdder();
 
     this.eyebrowElement.addEventListener("click", () => {
-      this.buildEyebrowTitle()
+      this.buildEyebrowTitle();
     });
 
-    this._element = this.getTag()
+    this._element = this.getTag();
     wrapper.appendChild(this.eyebrowElement);
     wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
-    this.wrapper.replaceWith(wrapper)
-    this.wrapper = wrapper
+    this.wrapper.replaceWith(wrapper);
+    this.wrapper = wrapper;
   }
 
   /**
@@ -153,16 +153,16 @@ export default class Header {
     this.footerElement = this.ui.makeFooterAdder();
 
     this.footerElement.addEventListener("click", () => {
-      this.buildFooterTitle()
+      this.buildFooterTitle();
     });
 
-    this._element = this.getTag()
+    this._element = this.getTag();
     wrapper.appendChild(this.eyebrowElement);
     wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
-    this.wrapper.replaceWith(wrapper)
-    this.wrapper = wrapper
+    this.wrapper.replaceWith(wrapper);
+    this.wrapper = wrapper;
   }
 
   /**
@@ -173,12 +173,12 @@ export default class Header {
     const wrapper = make("div", this.CSS.wrapper);
     this.eyebrowElement = this.ui.makeTitle("eyebrow");
 
-    const deleteBtn = this.eyebrowElement.querySelector(`.${this.CSS.prefix}`)
+    const deleteBtn = this.eyebrowElement.querySelector(`.${this.CSS.prefix}`);
     deleteBtn.addEventListener("click", () => {
-      this.buildEyebrowAdder()
+      this.buildEyebrowAdder();
     });
 
-    this._element = this.getTag()
+    this._element = this.getTag();
     wrapper.appendChild(this.eyebrowElement);
     wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
@@ -187,12 +187,11 @@ export default class Header {
     // this.eyebrowElement.parentNode.innerHTML = wrapper
     // this.eyebrowElement.parentNode.replaceChild(wrapper, this.eyebrowElement);
 
-
     // old
-    this.wrapper.replaceWith(wrapper)
-    this.wrapper = wrapper
+    this.wrapper.replaceWith(wrapper);
+    this.wrapper = wrapper;
 
-    this.ui.focusInput(this.eyebrowElement)
+    this.ui.focusInput(this.eyebrowElement);
   }
 
   /**
@@ -203,20 +202,20 @@ export default class Header {
     const wrapper = make("div", this.CSS.wrapper);
     this.footerElement = this.ui.makeTitle("footer");
 
-    const deleteBtn = this.footerElement.querySelector(`.${this.CSS.prefix}`)
+    const deleteBtn = this.footerElement.querySelector(`.${this.CSS.prefix}`);
     deleteBtn.addEventListener("click", () => {
-      this.buildFooterAdder()
+      this.buildFooterAdder();
     });
 
-    this._element = this.getTag()
+    this._element = this.getTag();
     wrapper.appendChild(this.eyebrowElement);
     wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
-    this.wrapper.replaceWith(wrapper)
-    this.wrapper = wrapper
+    this.wrapper.replaceWith(wrapper);
+    this.wrapper = wrapper;
 
-    this.ui.focusInput(this.footerElement)
+    this.ui.focusInput(this.footerElement);
   }
 
   /**
@@ -225,7 +224,6 @@ export default class Header {
    * @public
    */
   render() {
-    console.log("> rendering ...")
     this.wrapper = make("div", this.CSS.wrapper);
     // this.eyebrowElement = this.makeTitle("eyebrow");
     // this.footerElement = this.makeTitle("footer");
@@ -233,11 +231,11 @@ export default class Header {
     this.footerElement = this.ui.makeFooterAdder();
 
     this.eyebrowElement.addEventListener("click", () => {
-      this.buildEyebrowTitle()
+      this.buildEyebrowTitle();
     });
 
     this.footerElement.addEventListener("click", () => {
-      this.buildFooterTitle()
+      this.buildFooterTitle();
     });
 
     this.wrapper.appendChild(this.eyebrowElement);
@@ -281,9 +279,16 @@ export default class Header {
       /**
        * Set up click handler
        */
-      selectTypeButton.addEventListener("click", () => {
-        this.setLevel(level.number);
-      });
+      this.api.listeners.on(
+        selectTypeButton,
+        "click",
+        () => {
+          this.setLevel(level.number);
+          this.api.tooltip.hide();
+          this.api.toolbar.close();
+        },
+        false
+      );
 
       this.api.tooltip.onHover(selectTypeButton, `${level.number}级标题`, {
         placement: "top",
@@ -299,21 +304,48 @@ export default class Header {
       this.settingsButtons.push(selectTypeButton);
     });
 
-    // TODO:
-    const eyeBrowButton = make("span", this.CSS.settingsButton, {
-      innerHTML: EyeBrowIcon,
-    });
-    this.api.tooltip.onHover(eyeBrowButton, "眉标题", { placement: "top" });
+    if (this.data.level === 1) {
+      const eyeBrowButton = this.makeSubtitleSetting("eyebrow");
+      const footerEditButton = this.makeSubtitleSetting("footer");
 
-    const footerEditButton = make("span", this.CSS.settingsButton, {
-      innerHTML: FooterEditIcon,
-    });
-    this.api.tooltip.onHover(footerEditButton, "脚标题", { placement: "top" });
-
-    holder.appendChild(eyeBrowButton);
-    holder.appendChild(footerEditButton);
+      holder.appendChild(eyeBrowButton);
+      holder.appendChild(footerEditButton);
+    }
 
     return holder;
+  }
+
+  makeSubtitleSetting(type = "eyebrow") {
+    const target =
+      type === "eyebrow" ? this.eyebrowElement : this.footerElement;
+    const icon = type === "eyebrow" ? EyeBrowIcon : FooterEditIcon;
+    const title = type === "eyebrow" ? "眉标题" : "脚标题";
+
+    const element = make("span", this.CSS.settingsButton, {
+      innerHTML: icon,
+    });
+
+    // console.log("check eyebrowElement --> ", this.eyebrowElement);
+    /**
+     * Highlight current level button
+     */
+    if (this.ui.isSubtitleInputActive(target)) {
+      element.classList.add(this.CSS.settingsButtonActive);
+    }
+
+    this.api.tooltip.onHover(element, title, { placement: "top" });
+    this.api.listeners.on(
+      element,
+      "click",
+      () => {
+        console.log(`${type} clicked!`);
+        this.api.tooltip.hide();
+        this.api.toolbar.close();
+      },
+      false
+    );
+
+    return element;
   }
 
   /**
@@ -371,7 +403,7 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
-    console.log("## save: ", this.wrapper)
+    console.log("## save: ", this.wrapper);
 
     return {
       text: toolsContent.innerHTML,
@@ -415,8 +447,8 @@ export default class Header {
    * @private
    */
   restoreSubTitles() {
-    this.eyebrowElement.style.display = 'flex'
-    this.footerElement.style.display = 'flex'
+    this.eyebrowElement.style.display = "flex";
+    this.footerElement.style.display = "flex";
   }
 
   /**
@@ -424,8 +456,8 @@ export default class Header {
    * @private
    */
   removeSubTitles() {
-    this.eyebrowElement.style.display = 'none'
-    this.footerElement.style.display = 'none'
+    this.eyebrowElement.style.display = "none";
+    this.footerElement.style.display = "none";
   }
 
   /**
@@ -440,9 +472,9 @@ export default class Header {
     this._data = this.normalizeData(data);
 
     if (data.level !== 1) {
-      this.removeSubTitles()
+      this.removeSubTitles();
     } else {
-      this.restoreSubTitles()
+      this.restoreSubTitles();
     }
 
     /**
