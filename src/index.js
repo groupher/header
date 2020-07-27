@@ -325,11 +325,12 @@ export default class Header {
       innerHTML: icon,
     });
 
+    const currentState = this.ui.isSubtitleInputActive(target)
     // console.log("check eyebrowElement --> ", this.eyebrowElement);
     /**
      * Highlight current level button
      */
-    if (this.ui.isSubtitleInputActive(target)) {
+    if (currentState) {
       element.classList.add(this.CSS.settingsButtonActive);
     }
 
@@ -338,7 +339,7 @@ export default class Header {
       element,
       "click",
       () => {
-        console.log(`${type} clicked!`);
+        this.handleSubtitleSettingClick(type)
         this.api.tooltip.hide();
         this.api.toolbar.close();
       },
@@ -346,6 +347,26 @@ export default class Header {
     );
 
     return element;
+  }
+
+  /**
+   * handle subtitle click from settings menu
+   * @param level
+   * @return void
+   */
+  handleSubtitleSettingClick(type) {
+    const target =
+      type === "eyebrow" ? this.eyebrowElement : this.footerElement;
+
+    const currentState = this.ui.isSubtitleInputActive(target)
+
+    if (type === 'eyebrow') {
+      currentState ? this.buildEyebrowAdder() : this.buildEyebrowTitle()
+      return
+    }
+
+    currentState ? this.buildFooterAdder() : this.buildFooterTitle()
+    return
   }
 
   /**
