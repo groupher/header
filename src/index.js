@@ -74,6 +74,13 @@ export default class Header {
      * @type {HeaderData}
      * @private
      */
+    // demo: "data": {
+    //   text: "this is a title",
+    //   level: 1,
+    //   eyebrowTitle: 'eyebrow title',
+    //   footerTitle: 'footer title',
+    // }
+
     this._data = this.normalizeData(data);
 
     /**
@@ -119,6 +126,11 @@ export default class Header {
 
     newData.text = data.text || "";
     newData.level = parseInt(data.level) || this.defaultLevel.number;
+
+    // newData.eyebrowTitle = data.eyebrowTitle || null;
+    // newData.footerTitle = data.footerTitle || null;
+    newData.eyebrowTitle = data.eyebrowTitle || 'eyebrowTitle';
+    newData.footerTitle = data.footerTitle || 'footerTitle';
 
     return newData;
   }
@@ -224,19 +236,20 @@ export default class Header {
    * @public
    */
   render() {
+    const { level, eyebrowTitle, footerTitle } = this._data
     this.wrapper = make("div", this.CSS.wrapper);
-    // this.eyebrowElement = this.makeTitle("eyebrow");
-    // this.footerElement = this.makeTitle("footer");
-    this.eyebrowElement = this.ui.makeEyebrowAdder();
-    this.footerElement = this.ui.makeFooterAdder();
+    if (level === 1) {
+      this.eyebrowElement = eyebrowTitle ? this.ui.makeTitle("eyebrow", eyebrowTitle) : this.ui.makeEyebrowAdder()
+      this.footerElement = footerTitle ? this.ui.makeTitle("footer", footerTitle) : this.ui.makeFooterAdder()
+    }
 
-    this.eyebrowElement.addEventListener("click", () => {
+    this.api.listeners.on(this.eyebrowElement, "click", () => {
       this.buildEyebrowTitle();
-    });
+    }, false);
 
-    this.footerElement.addEventListener("click", () => {
+    this.api.listeners.on(this.footerElement, "click", () => {
       this.buildFooterTitle();
-    });
+    }, false);
 
     this.wrapper.appendChild(this.eyebrowElement);
     this.wrapper.appendChild(this._element);
@@ -424,12 +437,22 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
-    console.log("## save: ", this.wrapper);
+    // console.log("## save: ", this.wrapper);
+    // console.log("## toolsContent: ", toolsContent)
+    // console.log("this.eyebrowElement: ", this.eyebrowElement)
+    // console.log("this.footerElement: ", this.footerElement)
 
-    return {
-      text: toolsContent.innerHTML,
+    const data = {
+      text: toolsContent.querySelector(`.${this.CSS.tag}`).innerHTML,
       level: this.currentLevel.number,
-    };
+    }
+
+    data.eyebrowTitle = this.eyebrowElement.querySelector(`.${this.ui.CSS.subTitleInput}`).innerHTML
+    data.footerTitle = this.footerElement.querySelector(`.${this.ui.CSS.subTitleInput}`).innerHTML
+
+    console.log("data -> : ", data)
+
+    return data;
   }
 
   /**

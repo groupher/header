@@ -72,10 +72,24 @@ export default class Ui {
     return footerAdder;
   }
 
-  makeTitle(type = "footer") {
+  /**
+   *
+   * @returns {String}
+   * @private
+   */
+  _getDefaultTitle(type, text) {
+    if (type === 'footer') {
+      return text || '输入脚标题'
+    }
+
+    return text || '输入眉标题'
+  }
+
+  makeTitle(type = "footer", text) {
     const css =
       type === "footer" ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
-    const placeholder = type === "footer" ? "输入脚标题" : "输入眉标题";
+
+    const placeholder = this._getDefaultTitle(type, text)
 
     const title = make("div", css);
 
