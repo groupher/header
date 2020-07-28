@@ -73,36 +73,28 @@ export default class Ui {
   }
 
   /**
-   *
-   * @returns {String}
-   * @private
+   * @param {type} string
+   * @param {text} string
+   * @returns {HTMLElement}
+   * @public
    */
-  _getDefaultTitle(type, text) {
-    if (type === 'footer') {
-      return text || '输入脚标题'
-    }
-
-    return text || '输入眉标题'
-  }
-
   makeTitle(type = "footer", text) {
     const css =
       type === "footer" ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
 
-    const placeholder = this._getDefaultTitle(type, text)
-
+    const placeholder = type === 'footer' ? '输入脚标题' : '输入眉标题'
     const title = make("div", css);
 
     const titleInput = make("div", this.CSS.subTitleInput, {
       contentEditable: true,
-      innerHTML: placeholder,
-      "data-placeholder": placeholder,
+      innerHTML: text || placeholder,
+      "data-placeholder": text || placeholder,
     });
 
     // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
     titleInput.addEventListener("focus", (e) => {
       const value = e.target.innerHTML;
-      value === placeholder && (e.target.innerHTML = "");
+      value === "" && (e.target.innerHTML = placeholder);
     });
 
     titleInput.addEventListener("blur", (e) => {

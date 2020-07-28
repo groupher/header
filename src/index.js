@@ -47,6 +47,7 @@ export default class Header {
    */
   constructor({ data, config, api }) {
     this.api = api;
+    this.listeners = this.api.listeners
 
     /**
      * Styles
@@ -183,23 +184,30 @@ export default class Header {
    */
   buildEyebrowTitle() {
     const wrapper = make("div", this.CSS.wrapper);
-    this.eyebrowElement = this.ui.makeTitle("eyebrow");
+    this.eyebrowElement = this.ui.makeTitle("eyebrow", this._data.eyebrowTitle);
+    const eyebrowInput = this.eyebrowElement.querySelector(`.${this.ui.CSS.subTitleInput}`)
 
+    /**
+     * sync current value to _data
+     */
+    this.listeners.on(eyebrowInput, "input", (e) => {
+      this._data.eyebrowTitle = eyebrowInput.innerHTML
+    }, false);
+
+    /**
+     * if deleteBtn icon clicked, then switch to adder
+     */
     const deleteBtn = this.eyebrowElement.querySelector(`.${this.CSS.prefix}`);
-    deleteBtn.addEventListener("click", () => {
+    this.listeners.on(deleteBtn, "click", () => {
       this.buildEyebrowAdder();
-    });
+    }, false);
+
 
     this._element = this.getTag();
     wrapper.appendChild(this.eyebrowElement);
     wrapper.appendChild(this._element);
     wrapper.appendChild(this.footerElement);
 
-    // console.log("this.eyebrowElement.parentNode -> ", this.eyebrowElement.parentNode)
-    // this.eyebrowElement.parentNode.innerHTML = wrapper
-    // this.eyebrowElement.parentNode.replaceChild(wrapper, this.eyebrowElement);
-
-    // old
     this.wrapper.replaceWith(wrapper);
     this.wrapper = wrapper;
 
@@ -212,8 +220,19 @@ export default class Header {
    */
   buildFooterTitle() {
     const wrapper = make("div", this.CSS.wrapper);
-    this.footerElement = this.ui.makeTitle("footer");
+    this.footerElement = this.ui.makeTitle("footer", this._data.footerTitle);
+    const footerInput = this.footerElement.querySelector(`.${this.ui.CSS.subTitleInput}`)
 
+    /**
+     * sync current value to _data
+     */
+    this.listeners.on(footerInput, "input", (e) => {
+      this._data.footerTitle = footerInput.innerHTML
+    }, false);
+
+    /**
+     * if deleteBtn icon clicked, then switch to adder
+     */
     const deleteBtn = this.footerElement.querySelector(`.${this.CSS.prefix}`);
     deleteBtn.addEventListener("click", () => {
       this.buildFooterAdder();
@@ -243,11 +262,11 @@ export default class Header {
       this.footerElement = footerTitle ? this.ui.makeTitle("footer", footerTitle) : this.ui.makeFooterAdder()
     }
 
-    this.api.listeners.on(this.eyebrowElement, "click", () => {
+    this.listeners.on(this.eyebrowElement, "click", () => {
       this.buildEyebrowTitle();
     }, false);
 
-    this.api.listeners.on(this.footerElement, "click", () => {
+    this.listeners.on(this.footerElement, "click", () => {
       this.buildFooterTitle();
     }, false);
 
@@ -292,16 +311,11 @@ export default class Header {
       /**
        * Set up click handler
        */
-      this.api.listeners.on(
-        selectTypeButton,
-        "click",
-        () => {
-          this.setLevel(level.number);
-          this.api.tooltip.hide();
-          this.api.toolbar.close();
-        },
-        false
-      );
+      this.listeners.on(selectTypeButton, "click", () => {
+        this.setLevel(level.number);
+        this.api.tooltip.hide();
+        this.api.toolbar.close();
+      }, false);
 
       this.api.tooltip.onHover(selectTypeButton, `${level.number}级标题`, {
         placement: "top",
@@ -348,16 +362,11 @@ export default class Header {
     }
 
     this.api.tooltip.onHover(element, title, { placement: "top" });
-    this.api.listeners.on(
-      element,
-      "click",
-      () => {
-        this.handleSubtitleSettingClick(type)
-        this.api.tooltip.hide();
-        this.api.toolbar.close();
-      },
-      false
-    );
+    this.listeners.on(element, "click", () => {
+      this.handleSubtitleSettingClick(type)
+      this.api.tooltip.hide();
+      this.api.toolbar.close();
+    }, false);
 
     return element;
   }
@@ -437,20 +446,21 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
-    // console.log("## save: ", this.wrapper);
-    // console.log("## toolsContent: ", toolsContent)
-    // console.log("this.eyebrowElement: ", this.eyebrowElement)
-    // console.log("this.footerElement: ", this.footerElement)
-
     const data = {
       text: toolsContent.querySelector(`.${this.CSS.tag}`).innerHTML,
       level: this.currentLevel.number,
     }
 
-    data.eyebrowTitle = this.eyebrowElement.querySelector(`.${this.ui.CSS.subTitleInput}`).innerHTML
-    data.footerTitle = this.footerElement.querySelector(`.${this.ui.CSS.subTitleInput}`).innerHTML
+    const eyebrowInput = this.eyebrowElement.querySelector(`.${this.ui.CSS.subTitleInput}`)
+    const footerInput = this.footerElement.querySelector(`.${this.ui.CSS.subTitleInput}`)
 
-    console.log("data -> : ", data)
+    if (eyebrowInput) {
+      data.eyebrowTitle = eyebrowInput.innerHTML
+    }
+
+    if (footerInput) {
+      data.footerTitle = footerInput.innerHTML
+    }
 
     return data;
   }
