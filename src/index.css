@@ -2,22 +2,19 @@
  * Plugin styles
  */
 .ce-header-wrapper {
-  position: relative;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .ce-header {
-  padding: 1em 0;
-  margin-top: 20px;
-  margin-bottom: 40px;
-  line-height: 1.5em;
+  margin-top: 0;
+  margin-bottom: 0;
   outline: none;
 }
 
 .ce-header-prefix {
   visibility: hidden;
-  position: absolute;
-  top: 4px;
-  left: 0px;
+  margin-right: 15px;
   cursor: pointer;
 }
 
@@ -32,13 +29,11 @@
 }
 
 .ce-header-eyebrow-title {
-  position: absolute;
-  top: 5px;
-  left: -30px;
-  /* display: flex;
-  align-items: center; */
-  padding-left: 30px;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-left: -30px;
+  margin-bottom: 5px;
+  width: calc(100% + 30px);
   color: grey;
   outline: none;
 }
@@ -52,12 +47,10 @@
 }
 
 .ce-header-eyebrow-adder {
-  position: absolute;
-  top: 10px;
-  left: -30px;
-  height: 38px;
   display: flex;
   align-items: flex-start;
+  height: 28px;
+  margin-left: -30px;
 }
 
 .ce-header-eyebrow-adder:hover .ce-header-add-icon {
@@ -91,11 +84,11 @@
 }
 
 .ce-header-footer-title {
-  position: absolute;
-  left: -30px;
-  padding-left: 30px;
-  bottom: 5px;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-left: -30px;
+  margin-top: 5px;
+  width: calc(100% + 30px);
   color: grey;
   outline: none;
 }
@@ -109,12 +102,10 @@
 }
 
 .ce-header-footer-adder {
-  position: absolute;
-  bottom: 0px;
-  left: -30px;
-  height: 35px;
   display: flex;
   align-items: flex-end;
+  height: 28px;
+  margin-left: -30px;
 }
 
 .ce-header-footer-adder:hover .ce-header-add-icon {
