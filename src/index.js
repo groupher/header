@@ -282,29 +282,30 @@ export default class Header {
       this.footerElement = footerTitle
         ? this.ui.makeTitle("footer", footerTitle)
         : this.ui.makeFooterAdder();
+
+      this.listeners.on(
+        this.eyebrowElement,
+        "click",
+        () => {
+          this.buildEyebrowTitle();
+        },
+        false
+      );
+
+      this.listeners.on(
+        this.footerElement,
+        "click",
+        () => {
+          this.buildFooterTitle();
+        },
+        false
+      );
+      this.wrapper.appendChild(this.eyebrowElement);
+      this.wrapper.appendChild(this._element);
+      this.wrapper.appendChild(this.footerElement);
+    } else {
+      this.wrapper.appendChild(this._element);
     }
-
-    this.listeners.on(
-      this.eyebrowElement,
-      "click",
-      () => {
-        this.buildEyebrowTitle();
-      },
-      false
-    );
-
-    this.listeners.on(
-      this.footerElement,
-      "click",
-      () => {
-        this.buildFooterTitle();
-      },
-      false
-    );
-
-    this.wrapper.appendChild(this.eyebrowElement);
-    this.wrapper.appendChild(this._element);
-    this.wrapper.appendChild(this.footerElement);
 
     return this.wrapper;
   }
@@ -489,24 +490,28 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
+    const { level } = this._data;
+
     const data = {
       text: toolsContent.querySelector(`.${this.CSS.tag}`).innerHTML,
       level: this.currentLevel.number,
     };
 
-    const eyebrowInput = this.eyebrowElement.querySelector(
-      `.${this.ui.CSS.subTitleInput}`
-    );
-    const footerInput = this.footerElement.querySelector(
-      `.${this.ui.CSS.subTitleInput}`
-    );
+    if (level === 1) {
+      const eyebrowInput = this.eyebrowElement.querySelector(
+        `.${this.ui.CSS.subTitleInput}`
+      );
+      const footerInput = this.footerElement.querySelector(
+        `.${this.ui.CSS.subTitleInput}`
+      );
 
-    if (eyebrowInput) {
-      data.eyebrowTitle = eyebrowInput.innerHTML;
-    }
+      if (eyebrowInput) {
+        data.eyebrowTitle = eyebrowInput.innerHTML;
+      }
 
-    if (footerInput) {
-      data.footerTitle = footerInput.innerHTML;
+      if (footerInput) {
+        data.footerTitle = footerInput.innerHTML;
+      }
     }
 
     return data;
