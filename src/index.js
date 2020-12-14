@@ -113,6 +113,15 @@ export default class Header {
   }
 
   /**
+   * Allow to press Enter inside the Header input
+   * @returns {boolean}
+   * @public
+   */
+  static get enableLineBreaks() {
+    return false;
+  }
+
+  /**
    * Normalize input data
    * @param {HeaderData} data
    * @return {HeaderData}
