@@ -3,6 +3,8 @@
  */
 import { initEventBus, EVENTS, make, clazz } from "@groupher/editor-utils";
 
+import { H1, H2, H3, EYEBROW, FOOTER } from "./constant";
+
 import ToolboxIcon from "./icons/ToolboxIcon.svg";
 
 import H1Icon from "./icons/H1.svg";
@@ -137,10 +139,8 @@ export default class Header {
     newData.text = data.text || "";
     newData.level = parseInt(data.level) || this.defaultLevel.number;
 
-    // newData.eyebrowTitle = data.eyebrowTitle || null;
-    // newData.footerTitle = data.footerTitle || null;
-    newData.eyebrowTitle = data.eyebrowTitle || "eyebrowTitle";
-    newData.footerTitle = data.footerTitle || "footerTitle";
+    newData.eyebrowTitle = data.eyebrowTitle || "";
+    newData.footerTitle = data.footerTitle || "";
 
     return newData;
   }
@@ -240,7 +240,7 @@ export default class Header {
    */
   buildFooterTitle() {
     const wrapper = make("div", this.CSS.wrapper);
-    this.footerElement = this.ui.makeTitle("footer", this._data.footerTitle);
+    this.footerElement = this.ui.makeTitle(FOOTER, this._data.footerTitle);
     const footerInput = this.footerElement.querySelector(
       `.${this.ui.CSS.subTitleInput}`
     );
@@ -283,13 +283,14 @@ export default class Header {
    */
   render() {
     const { level, eyebrowTitle, footerTitle } = this._data;
+
     this.wrapper = make("div", this.CSS.wrapper);
     if (level === 1) {
       this.eyebrowElement = eyebrowTitle
-        ? this.ui.makeTitle("eyebrow", eyebrowTitle)
+        ? this.ui.makeTitle(EYEBROW, eyebrowTitle)
         : this.ui.makeEyebrowAdder();
       this.footerElement = footerTitle
-        ? this.ui.makeTitle("footer", footerTitle)
+        ? this.ui.makeTitle(FOOTER, footerTitle)
         : this.ui.makeFooterAdder();
 
       this.listeners.on(
@@ -379,8 +380,8 @@ export default class Header {
     });
 
     if (this.data.level === 1) {
-      const eyeBrowButton = this.makeSubtitleSetting("eyebrow");
-      const footerEditButton = this.makeSubtitleSetting("footer");
+      const eyeBrowButton = this.makeSubtitleSetting(EYEBROW);
+      const footerEditButton = this.makeSubtitleSetting(FOOTER);
 
       holder.appendChild(eyeBrowButton);
       holder.appendChild(footerEditButton);
@@ -389,11 +390,10 @@ export default class Header {
     return holder;
   }
 
-  makeSubtitleSetting(type = "eyebrow") {
-    const target =
-      type === "eyebrow" ? this.eyebrowElement : this.footerElement;
-    const icon = type === "eyebrow" ? EyeBrowIcon : FooterEditIcon;
-    const title = type === "eyebrow" ? "眉标题" : "脚标题";
+  makeSubtitleSetting(type = EYEBROW) {
+    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
+    const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
+    const title = type === EYEBROW ? "眉标题" : "脚标题";
 
     const element = make("span", this.CSS.settingsButton, {
       innerHTML: icon,
@@ -429,12 +429,11 @@ export default class Header {
    * @return void
    */
   handleSubtitleSettingClick(type) {
-    const target =
-      type === "eyebrow" ? this.eyebrowElement : this.footerElement;
+    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
 
     const currentState = this.ui.isSubtitleInputActive(target);
 
-    if (type === "eyebrow") {
+    if (type === EYEBROW) {
       currentState ? this.buildEyebrowAdder() : this.buildEyebrowTitle();
       return;
     }
@@ -685,9 +684,9 @@ export default class Header {
    */
   get defaultLevel() {
     /**
-     * Use H2 as default header
+     * Use H1 as default header
      */
-    return this.levels[1];
+    return this.levels[0];
   }
 
   /**
@@ -705,17 +704,17 @@ export default class Header {
     return [
       {
         number: 1,
-        tag: "H1",
+        tag: H1,
         svg: H1Icon,
       },
       {
         number: 2,
-        tag: "H2",
+        tag: H2,
         svg: H2Icon,
       },
       {
         number: 3,
-        tag: "H3",
+        tag: H3,
         svg: H3Icon,
       },
     ];
@@ -736,11 +735,11 @@ export default class Header {
     let level = 2;
 
     switch (content.tagName) {
-      case "H1":
+      case H1:
         level = 1;
         break;
       /** H2 is a default level */
-      case "H3":
+      case H3:
         level = 3;
         break;
     }
@@ -759,7 +758,7 @@ export default class Header {
    */
   static get pasteConfig() {
     return {
-      tags: ["H1", "H2", "H3"],
+      tags: [H1, H2, H3],
     };
   }
 
