@@ -23,6 +23,7 @@
 }
 
 .ce-header-sub-title-input {
+  width: 100%;
   font-size: 16px;
   line-height: 24px;
   outline: none;
