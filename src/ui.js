@@ -7,11 +7,11 @@ import DeleteIcon from "./icons/Delete.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
 export default class Ui {
-  constructor({ api, config, rebuildEyebrowAdder, rebuildFooterAdder }) {
+  constructor({ api, config, buildEyebrowAdder, buildFooterAdder }) {
     this.api = api;
     this.config = config;
-    this.rebuildEyebrowAdder = rebuildEyebrowAdder;
-    this.rebuildFooterAdder = rebuildFooterAdder;
+    this.buildEyebrowAdder = buildEyebrowAdder;
+    this.buildFooterAdder = buildFooterAdder;
   }
 
   /**
@@ -107,8 +107,7 @@ export default class Ui {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        console.log("rebuildEyebrowAdder blur: ");
-        this.rebuildEyebrowAdder();
+        this.buildEyebrowAdder();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }
@@ -130,8 +129,8 @@ export default class Ui {
    * @returns {HTMLElement}
    * @public
    */
-  makeTitle(type = FOOTER, text) {
-    const css = type === FOOTER ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
+  makeFooterTitle(text) {
+    const css = this.CSS.footerTitle;
 
     const placeholder = "";
     const title = make("div", css);
@@ -152,10 +151,7 @@ export default class Ui {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        console.log("blur type: ", type);
-        type === FOOTER
-          ? this.rebuildFooterAdder()
-          : this.rebuildEyebrowAdder();
+        this.buildFooterAdder();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }

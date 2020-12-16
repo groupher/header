@@ -76,6 +76,7 @@
 }
 
 .ce-header-eyebrow-adder:hover .ce-header-add-icon {
+  margin-top: 4px;
   opacity: 1;
 }
 
@@ -87,7 +88,7 @@
   opacity: 0;
   color: grey;
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 14px;
   margin-top: -1px;
   transition: all 0.2s;
 }
@@ -97,9 +98,8 @@
 }
 
 .ce-header-add-icon svg {
-  font-size: 18px;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   color: grey;
   outline: none;
   cursor: pointer;
@@ -131,6 +131,7 @@
 }
 
 .ce-header-footer-adder:hover .ce-header-add-icon {
+  margin-bottom: 2px;
   opacity: 1;
 }
 
@@ -142,7 +143,7 @@
   opacity: 0;
   color: grey;
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 14px;
   margin-top: -1px;
   transition: all 0.3s;
 }

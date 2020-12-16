@@ -110,8 +110,8 @@ export default class Header {
     this.ui = new Ui({
       api,
       config,
-      rebuildEyebrowAdder: this.rebuildEyebrowAdder.bind(this),
-      rebuildFooterAdder: this.rebuildFooterAdder.bind(this),
+      buildEyebrowAdder: this.buildEyebrowAdder.bind(this),
+      buildFooterAdder: this.buildFooterAdder.bind(this),
       // data: this._data,
     });
   }
@@ -151,23 +151,22 @@ export default class Header {
    * rebuildEyebrowAdder when eyebrow input is empty after blur
    * @memberof Header
    */
-  rebuildEyebrowAdder() {
-    const eyebrowElement = this.ui.makeEyebrowAdder();
-    eyebrowElement.addEventListener("click", () => this.buildEyebrowTitle());
-    console.log("fucking before: ", eyebrowElement);
-    // this.eyebrowElement = eyebrowElement;
-    this.eyebrowElement.replaceWith(eyebrowElement);
-    console.log("rebuildEyebrowAdder after: ", this.eyebrowElement);
-  }
+  // rebuildEyebrowAdder() {
+  // this.buildEyebrowAdder();
+  // const eyebrowElement = this.ui.makeEyebrowAdder();
+  // eyebrowElement.addEventListener("click", () => this.buildEyebrowTitle());
+  // this.eyebrowElement.replaceWith(eyebrowElement);
+  // }
 
   /**
    * rebuildFooterAdder when footer input is empty after blur
    * @memberof Header
    */
   rebuildFooterAdder() {
-    const footerElement = this.ui.makeFooterAdder();
-    footerElement.addEventListener("click", () => this.buildFooterTitle());
-    this.footerElement.replaceWith(footerElement);
+    this.buildFooterAdder();
+    // const footerElement = this.ui.makeFooterAdder();
+    // footerElement.addEventListener("click", () => this.buildFooterTitle());
+    // this.footerElement.replaceWith(footerElement);
   }
 
   /**
@@ -175,8 +174,6 @@ export default class Header {
    * @public
    */
   buildEyebrowAdder() {
-    console.log("< buildEyebrowAdder");
-
     const wrapper = make("div", this.CSS.wrapper);
     this.eyebrowElement = this.ui.makeEyebrowAdder();
 
@@ -272,12 +269,10 @@ export default class Header {
    */
   buildFooterTitle() {
     const wrapper = make("div", this.CSS.wrapper);
-    this.footerElement = this.ui.makeTitle(FOOTER, this._data.footerTitle);
+    this.footerElement = this.ui.makeFooterTitle(this._data.footerTitle);
     const footerInput = this.footerElement.querySelector(
       `.${this.ui.CSS.footerTitleInput}`
     );
-
-    console.log("buildFooterTitle this.eyebrowElement: ", this.eyebrowElement);
 
     /**
      * sync current value to _data
@@ -327,7 +322,7 @@ export default class Header {
         ? this.ui.makeEyebrowTitle(eyebrowTitle)
         : this.ui.makeEyebrowAdder();
       this.footerElement = footerTitle
-        ? this.ui.makeTitle(FOOTER, footerTitle)
+        ? this.ui.makeFooterTitle(footerTitle)
         : this.ui.makeFooterAdder();
 
       this.listeners.on(
