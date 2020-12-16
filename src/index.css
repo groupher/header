@@ -12,21 +12,42 @@
   outline: none;
 }
 
-.ce-header-prefix {
+.ce-header-eyebrow-delete {
   visibility: hidden;
   margin-right: 15px;
   cursor: pointer;
+  margin-top: 18px;
 }
 
-.ce-header-prefix:hover svg {
+.ce-header-eyebrow-delete:hover svg {
   fill: tomato;
 }
 
-.ce-header-sub-title-input {
+.ce-header-footer-delete {
+  visibility: hidden;
+  margin-right: 15px;
+  cursor: pointer;
+  margin-top: -18px;
+}
+
+.ce-header-footer-delete:hover svg {
+  fill: tomato;
+}
+
+.ce-header-eyebrow-title-input {
   width: 100%;
   font-size: 16px;
   line-height: 24px;
   outline: none;
+  margin-top: 20px;
+}
+
+.ce-header-footer-title-input {
+  width: 100%;
+  font-size: 16px;
+  line-height: 24px;
+  outline: none;
+  margin-bottom: 20px;
 }
 
 .ce-header-eyebrow-title {
@@ -43,7 +64,7 @@
   content: attr(data-placeholder);
 }
 
-.ce-header-eyebrow-title:hover .ce-header-prefix {
+.ce-header-eyebrow-title:hover .ce-header-eyebrow-delete {
   visibility: visible;
 }
 
@@ -55,6 +76,7 @@
 }
 
 .ce-header-eyebrow-adder:hover .ce-header-add-icon {
+  margin-top: 4px;
   opacity: 1;
 }
 
@@ -66,9 +88,9 @@
   opacity: 0;
   color: grey;
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 14px;
   margin-top: -1px;
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
 .ce-header-add-icon {
@@ -76,9 +98,8 @@
 }
 
 .ce-header-add-icon svg {
-  font-size: 18px;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   color: grey;
   outline: none;
   cursor: pointer;
@@ -98,7 +119,7 @@
   content: attr(data-placeholder);
 }
 
-.ce-header-footer-title:hover .ce-header-prefix {
+.ce-header-footer-title:hover .ce-header-footer-delete {
   visibility: visible;
 }
 
@@ -110,6 +131,7 @@
 }
 
 .ce-header-footer-adder:hover .ce-header-add-icon {
+  margin-bottom: 2px;
   opacity: 1;
 }
 
@@ -121,7 +143,7 @@
   opacity: 0;
   color: grey;
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 14px;
   margin-top: -1px;
   transition: all 0.3s;
 }

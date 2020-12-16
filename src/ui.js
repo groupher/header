@@ -7,9 +7,11 @@ import DeleteIcon from "./icons/Delete.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
 export default class Ui {
-  constructor({ api, config }) {
+  constructor({ api, config, buildEyebrowAdder, buildFooterAdder }) {
     this.api = api;
     this.config = config;
+    this.buildEyebrowAdder = buildEyebrowAdder;
+    this.buildFooterAdder = buildFooterAdder;
   }
 
   /**
@@ -20,7 +22,8 @@ export default class Ui {
     return {
       // baseBlock: this.api.styles.block,
       addIcon: "ce-header-add-icon",
-      prefix: "ce-header-prefix",
+      eyebrowDelete: "ce-header-eyebrow-delete",
+      footerDelete: "ce-header-footer-delete",
 
       // adder
       eyebrowAdder: "ce-header-eyebrow-adder",
@@ -30,7 +33,8 @@ export default class Ui {
       footerAdderText: "ce-header-footer-adder-text",
 
       // sub title
-      subTitleInput: "ce-header-sub-title-input",
+      eyebrowTitleInput: "ce-header-eyebrow-title-input",
+      footerTitleInput: "ce-header-footer-title-input",
       eyebrowTitle: "ce-header-eyebrow-title",
       footerTitle: "ce-header-footer-title",
     };
@@ -80,13 +84,14 @@ export default class Ui {
    * @returns {HTMLElement}
    * @public
    */
-  makeTitle(type = FOOTER, text) {
-    const css = type === FOOTER ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
+  makeEyebrowTitle(text) {
+    const css = this.CSS.eyebrowTitle;
+    const inputCSS = this.CSS.eyebrowTitleInput;
 
-    const placeholder = type === FOOTER ? "输入脚标题" : "输入眉标题";
-    const title = make("div", css);
+    const placeholder = "";
+    const titleEl = make("div", css);
 
-    const titleInput = make("div", this.CSS.subTitleInput, {
+    const titleInput = make("div", inputCSS, {
       contentEditable: true,
       innerHTML: text || placeholder,
       "data-placeholder": text || placeholder,
@@ -100,13 +105,59 @@ export default class Ui {
 
     titleInput.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
-      // if (value === "") {
-      //   e.target.innerHTML;
-      // }
+      // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
+      if (value.trim() === "") {
+        this.buildEyebrowAdder();
+      } else {
+        value === "" && (e.target.innerHTML = placeholder);
+      }
+    });
+
+    const deleteBtn = make("div", this.CSS.eyebrowDelete, {
+      innerHTML: DeleteIcon,
+    });
+
+    titleEl.appendChild(deleteBtn);
+    titleEl.appendChild(titleInput);
+
+    return titleEl;
+  }
+
+  /**
+   * @param {type} string
+   * @param {text} string
+   * @returns {HTMLElement}
+   * @public
+   */
+  makeFooterTitle(text) {
+    const css = this.CSS.footerTitle;
+
+    const placeholder = "";
+    const title = make("div", css);
+
+    const titleInput = make("div", this.CSS.footerTitleInput, {
+      contentEditable: true,
+      innerHTML: text || placeholder,
+      "data-placeholder": text || placeholder,
+    });
+
+    // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
+    titleInput.addEventListener("focus", (e) => {
+      const value = e.target.innerHTML;
       value === "" && (e.target.innerHTML = placeholder);
     });
 
-    const deleteBtn = make("div", this.CSS.prefix, {
+    titleInput.addEventListener("blur", (e) => {
+      const value = e.target.innerHTML;
+      // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
+      if (value.trim() === "") {
+        this.buildFooterAdder();
+      } else {
+        value === "" && (e.target.innerHTML = placeholder);
+      }
+    });
+
+    const deleteBtn = make("div", this.CSS.footerDelete, {
       innerHTML: DeleteIcon,
     });
 
@@ -123,13 +174,19 @@ export default class Ui {
    * @returns {void}
    * @public
    */
-  focusInput(element) {
-    const footerInput = element.querySelector(`.${this.CSS.subTitleInput}`);
+  focusInput(type, element) {
+    const css =
+      type === FOOTER ? this.CSS.footerTitleInput : this.CSS.eyebrowTitleInput;
+
+    const footerInput = element.querySelector(`.${css}`);
     footerInput.focus();
   }
 
-  isSubtitleInputActive(element) {
-    return !!element.querySelector(`.${this.CSS.subTitleInput}`);
+  isSubtitleInputActive(type, element) {
+    const css =
+      type === FOOTER ? this.CSS.footerTitleInput : this.CSS.eyebrowTitleInput;
+
+    return !!element.querySelector(`.${css}`);
   }
 
   // get data() {
