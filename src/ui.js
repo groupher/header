@@ -1,5 +1,7 @@
 import { make } from "@groupher/editor-utils";
 
+import { FOOTER } from "./constant";
+
 import EyeBrowIcon from "./icons/EyeBrowPlusIcon.svg";
 import DeleteIcon from "./icons/Delete.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
@@ -78,11 +80,10 @@ export default class Ui {
    * @returns {HTMLElement}
    * @public
    */
-  makeTitle(type = "footer", text) {
-    const css =
-      type === "footer" ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
+  makeTitle(type = FOOTER, text) {
+    const css = type === FOOTER ? this.CSS.footerTitle : this.CSS.eyebrowTitle;
 
-    const placeholder = type === 'footer' ? '输入脚标题' : '输入眉标题'
+    const placeholder = type === FOOTER ? "输入脚标题" : "输入眉标题";
     const title = make("div", css);
 
     const titleInput = make("div", this.CSS.subTitleInput, {
@@ -99,6 +100,9 @@ export default class Ui {
 
     titleInput.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
+      // if (value === "") {
+      //   e.target.innerHTML;
+      // }
       value === "" && (e.target.innerHTML = placeholder);
     });
 
