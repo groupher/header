@@ -183,6 +183,9 @@ export default class Ui {
   }
 
   isSubtitleInputActive(type, element) {
+    // element null means there is no subtitle now
+    if (!element) return false;
+
     const css =
       type === FOOTER ? this.CSS.footerTitleInput : this.CSS.eyebrowTitleInput;
 

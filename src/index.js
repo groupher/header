@@ -1,7 +1,13 @@
 /**
  * Build styles
  */
-import { initEventBus, EVENTS, make, clazz } from "@groupher/editor-utils";
+import {
+  initEventBus,
+  EVENTS,
+  make,
+  clazz,
+  moveCaretToEnd,
+} from "@groupher/editor-utils";
 
 import { H1, H2, H3, EYEBROW, FOOTER } from "./constant";
 
@@ -148,25 +154,11 @@ export default class Header {
   }
 
   /**
-   * rebuildEyebrowAdder when eyebrow input is empty after blur
-   * @memberof Header
-   */
-  // rebuildEyebrowAdder() {
-  // this.buildEyebrowAdder();
-  // const eyebrowElement = this.ui.makeEyebrowAdder();
-  // eyebrowElement.addEventListener("click", () => this.buildEyebrowTitle());
-  // this.eyebrowElement.replaceWith(eyebrowElement);
-  // }
-
-  /**
    * rebuildFooterAdder when footer input is empty after blur
    * @memberof Header
    */
   rebuildFooterAdder() {
     this.buildFooterAdder();
-    // const footerElement = this.ui.makeFooterAdder();
-    // footerElement.addEventListener("click", () => this.buildFooterTitle());
-    // this.footerElement.replaceWith(footerElement);
   }
 
   /**
@@ -314,42 +306,65 @@ export default class Header {
    * @public
    */
   render() {
-    const { level, eyebrowTitle, footerTitle } = this._data;
+    const { level, eyebrowTitle, footerTitle, text } = this._data;
 
     this.wrapper = make("div", this.CSS.wrapper);
     if (level === 1) {
-      this.eyebrowElement = eyebrowTitle
-        ? this.ui.makeEyebrowTitle(eyebrowTitle)
-        : this.ui.makeEyebrowAdder();
-      this.footerElement = footerTitle
-        ? this.ui.makeFooterTitle(footerTitle)
-        : this.ui.makeFooterAdder();
+      // this.eyebrowElement = eyebrowTitle
+      //   ? this.ui.makeEyebrowTitle(eyebrowTitle)
+      //   : this.ui.makeEyebrowAdder();
+      // this.footerElement = footerTitle
+      //   ? this.ui.makeFooterTitle(footerTitle)
+      //   : this.ui.makeFooterAdder();
 
-      this.listeners.on(
-        this.eyebrowElement,
-        "click",
-        () => {
-          this.buildEyebrowTitle();
-        },
-        false
-      );
+      // this.listeners.on(
+      //   this.eyebrowElement,
+      //   "click",
+      //   () => {
+      //     this.buildEyebrowTitle();
+      //   },
+      //   false
+      // );
 
-      this.listeners.on(
-        this.footerElement,
-        "click",
-        () => {
-          this.buildFooterTitle();
-        },
-        false
-      );
-      this.wrapper.appendChild(this.eyebrowElement);
+      // this.listeners.on(
+      //   this.footerElement,
+      //   "click",
+      //   () => {
+      //     this.buildFooterTitle();
+      //   },
+      //   false
+      // );
+
+      // this.listeners.on(this._element, "keyup", (e) => {
+      //   this.onKeyUp(e);
+      // });
+
+      // this.wrapper.appendChild(this.eyebrowElement);
       this.wrapper.appendChild(this._element);
-      this.wrapper.appendChild(this.footerElement);
+      // this.wrapper.appendChild(this.footerElement);
     } else {
       this.wrapper.appendChild(this._element);
     }
 
     return this.wrapper;
+  }
+
+  onKeyUp(e) {
+    console.log(">> header onKeyDown e: ", e.code);
+    console.log(">> header e.target.value: ", e.target.innerHTML);
+
+    // if (e.target.innerHTML.trim() === "") {
+    //   const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
+    //   console.log("> deleting block: ", currentBlockIndex);
+    //   this.api.blocks.delete(currentBlockIndex);
+    // }
+
+    if (e.code === "Backspace" && e.target.innerHTML.trim() === "") {
+      console.log("> about deleting: ");
+      const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
+      console.log("> deleting block: ", currentBlockIndex);
+      this.api.blocks.delete(currentBlockIndex);
+    }
   }
 
   /**
@@ -537,24 +552,27 @@ export default class Header {
       level: this.currentLevel.number,
     };
 
-    if (level === 1) {
+    if (level === 1 && this.eyebrowElement) {
       const eyebrowInput = this.eyebrowElement.querySelector(
         `.${this.ui.CSS.eyebrowTitleInput}`
-      );
-      const footerInput = this.footerElement.querySelector(
-        `.${this.ui.CSS.footerTitleInput}`
       );
 
       if (eyebrowInput && eyebrowInput.innerText.trim() !== "") {
         data.eyebrowTitle = eyebrowInput.innerText;
       }
+    }
+
+    if (level === 1 && this.footerElement) {
+      const footerInput = this.footerElement.querySelector(
+        `.${this.ui.CSS.footerTitleInput}`
+      );
 
       if (footerInput && footerInput.innerText.trim() !== "") {
         data.footerTitle = footerInput.innerText;
       }
     }
 
-    console.log("header save: ", data);
+    // console.log("header save: ", data);
     return data;
   }
 
