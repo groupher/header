@@ -7,11 +7,12 @@ import DeleteIcon from "./icons/Delete.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
 export default class Ui {
-  constructor({ api, config, buildEyebrowAdder, buildFooterAdder }) {
+  constructor({ api, config, removeEyebrow, removeFooter }) {
     this.api = api;
     this.config = config;
-    this.buildEyebrowAdder = buildEyebrowAdder;
-    this.buildFooterAdder = buildFooterAdder;
+
+    this.removeEyebrow = removeEyebrow;
+    this.removeFooter = removeFooter;
   }
 
   /**
@@ -94,7 +95,7 @@ export default class Ui {
     const titleInput = make("div", inputCSS, {
       contentEditable: true,
       innerHTML: text || placeholder,
-      "data-placeholder": text || placeholder,
+      placeholder: "眉标题",
     });
 
     // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
@@ -107,7 +108,7 @@ export default class Ui {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        this.buildEyebrowAdder();
+        this.removeEyebrow();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }
@@ -151,7 +152,7 @@ export default class Ui {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        this.buildFooterAdder();
+        this.removeFooter();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }

@@ -7,10 +7,15 @@
 }
 
 .ce-header {
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 20px;
+  margin-bottom: 10px;
   outline: none;
 }
+
+/* .ce-header-wrapper h1 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+} */
 
 .ce-header-eyebrow-delete {
   visibility: hidden;
@@ -40,6 +45,12 @@
   line-height: 24px;
   outline: none;
   margin-top: 20px;
+}
+
+.ce-header-eyebrow-title-input[placeholder]:empty:before {
+  content: attr(placeholder);
+  font-style: italic;
+  color: #c1c1c1;
 }
 
 .ce-header-footer-title-input {
