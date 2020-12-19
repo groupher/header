@@ -1,9 +1,47 @@
 /**
  * Plugin styles
  */
+
 .ce-header-wrapper {
-  /* margin-top: 20px; */
-  /* margin-bottom: 40px; */
+}
+
+.ce-header-wrapper h1 {
+  position: relative;
+}
+
+.ce-header-wrapper h2 {
+  position: relative;
+}
+
+.ce-header-wrapper h3 {
+  position: relative;
+}
+
+.ce-header-wrapper h1:hover::after {
+  content: "H1";
+  position: absolute;
+  color: lightgrey;
+  font-size: 15px;
+  top: 10px;
+  left: -35px;
+}
+
+.ce-header-wrapper h2:hover::after {
+  content: "H2";
+  position: absolute;
+  color: lightgrey;
+  font-size: 14px;
+  top: 7px;
+  left: -32px;
+}
+
+.ce-header-wrapper h3:hover::after {
+  content: "H3";
+  position: absolute;
+  color: lightgrey;
+  font-size: 13px;
+  top: 5px;
+  left: -30px;
 }
 
 .ce-header {
@@ -11,11 +49,6 @@
   margin-bottom: 10px;
   outline: none;
 }
-
-/* .ce-header-wrapper h1 {
-  margin-top: 20px;
-  margin-bottom: 20px;
-} */
 
 .ce-header-eyebrow-delete {
   visibility: hidden;

@@ -292,24 +292,6 @@ export default class Header {
     return this.wrapper;
   }
 
-  onKeyUp(e) {
-    console.log(">> header onKeyDown e: ", e.code);
-    console.log(">> header e.target.value: ", e.target.innerHTML);
-
-    // if (e.target.innerHTML.trim() === "") {
-    //   const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
-    //   console.log("> deleting block: ", currentBlockIndex);
-    //   this.api.blocks.delete(currentBlockIndex);
-    // }
-
-    if (e.code === "Backspace" && e.target.innerHTML.trim() === "") {
-      console.log("> about deleting: ");
-      const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
-      console.log("> deleting block: ", currentBlockIndex);
-      this.api.blocks.delete(currentBlockIndex);
-    }
-  }
-
   /**
    * Create Block's settings block
    *
@@ -390,7 +372,6 @@ export default class Header {
     });
 
     const currentState = this.ui.isSubtitleInputActive(type, target);
-    // console.log("check eyebrowElement --> ", this.eyebrowElement);
     /**
      * Highlight current level button
      */
@@ -515,7 +496,6 @@ export default class Header {
       }
     }
 
-    // console.log("header save: ", data);
     return data;
   }
 
