@@ -402,14 +402,15 @@ export default class Header {
   handleSubtitleSettingClick(type) {
     const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
 
-    const currentState = this.ui.isSubtitleInputActive(type, target);
+    const isActive = this.ui.isSubtitleInputActive(type, target);
+    console.log("currentState: ", isActive);
 
     if (type === EYEBROW) {
-      this.drawEyebrowTitle();
+      isActive ? this._removeEyebrow() : this.drawEyebrowTitle();
       return;
     }
 
-    this.drawFooterTitle();
+    isActive ? this._removeFooter() : this.drawFooterTitle();
     return;
   }
 
