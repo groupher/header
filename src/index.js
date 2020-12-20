@@ -10,6 +10,7 @@ import {
 } from "@groupher/editor-utils";
 
 import { H1, H2, H3, EYEBROW, FOOTER } from "./constant";
+import { LEVELS, normalizeData, getCurrentLevel } from "./helper";
 
 import ToolboxIcon from "./icons/ToolboxIcon.svg";
 
@@ -85,14 +86,7 @@ export default class Header {
      * @type {HeaderData}
      * @private
      */
-    // demo: "data": {
-    //   text: "this is a title",
-    //   level: 1,
-    //   eyebrowTitle: 'eyebrow title',
-    //   footerTitle: 'footer title',
-    // }
-
-    this._data = this.normalizeData(data);
+    this._data = normalizeData(data);
 
     /**
      * List of settings buttons
@@ -129,28 +123,6 @@ export default class Header {
    */
   static get enableLineBreaks() {
     return false;
-  }
-
-  /**
-   * Normalize input data
-   * @param {HeaderData} data
-   * @return {HeaderData}
-   * @private
-   */
-  normalizeData(data) {
-    const newData = {};
-
-    if (typeof data !== "object") {
-      data = {};
-    }
-
-    newData.text = data.text || "";
-    newData.level = parseInt(data.level) || this.defaultLevel.number;
-
-    newData.eyebrowTitle = data.eyebrowTitle || "";
-    newData.footerTitle = data.footerTitle || "";
-
-    return newData;
   }
 
   /**
@@ -301,7 +273,7 @@ export default class Header {
     let holder = document.createElement("DIV");
 
     /** Add type selectors */
-    this.levels.forEach((level) => {
+    LEVELS.forEach((level) => {
       let selectTypeButton = document.createElement("SPAN");
 
       clazz.add(selectTypeButton, this.CSS.settingsButton);
@@ -309,7 +281,7 @@ export default class Header {
       /**
        * Highlight current level button
        */
-      if (this.currentLevel.number === level.number) {
+      if (getCurrentLevel(this._data).number === level.number) {
         clazz.add(selectTypeButton, this.CSS.settingsButtonActive);
       }
 
@@ -474,7 +446,7 @@ export default class Header {
 
     const data = {
       text: toolsContent.querySelector(`.${this.CSS.tag}`).innerHTML,
-      level: this.currentLevel.number,
+      level: getCurrentLevel(this._data).number,
     };
 
     if (level === 1 && this.eyebrowElement) {
@@ -526,7 +498,7 @@ export default class Header {
    */
   get data() {
     this._data.text = this._element.innerHTML;
-    this._data.level = this.currentLevel.number;
+    this._data.level = getCurrentLevel(this._data).number;
 
     return this._data;
   }
@@ -621,7 +593,7 @@ export default class Header {
     /**
      * Create element for current Block's level
      */
-    let tag = document.createElement(this.currentLevel.tag);
+    let tag = document.createElement(getCurrentLevel(this._data).tag);
 
     /**
      * Add text to block
@@ -643,74 +615,11 @@ export default class Header {
      */
     tag.dataset.placeholder = this._settings.placeholder || "";
 
-    this.listeners.on(
-      tag,
-      "input",
-      (ev) => {
-        this._data.text = ev.target.innerText;
-      },
-      false
-    );
+    this.listeners.on(tag, "input", (ev) => {
+      this._data.text = ev.target.innerText;
+    });
 
     return tag;
-  }
-
-  /**
-   * Get current level
-   * @return {level}
-   */
-  get currentLevel() {
-    let level = this.levels.find(
-      (levelItem) => levelItem.number === this._data.level
-    );
-
-    if (!level) {
-      level = this.defaultLevel;
-    }
-
-    return level;
-  }
-
-  /**
-   * Return default level
-   * @returns {level}
-   */
-  get defaultLevel() {
-    /**
-     * Use H1 as default header
-     */
-    return this.levels[0];
-  }
-
-  /**
-   * @typedef {object} level
-   * @property {number} number - level number
-   * @property {string} tag - tag correspondes with level number
-   * @property {string} svg - icon
-   */
-
-  /**
-   * Available header levels
-   * @return {level[]}
-   */
-  get levels() {
-    return [
-      {
-        number: 1,
-        tag: H1,
-        svg: H1Icon,
-      },
-      {
-        number: 2,
-        tag: H2,
-        svg: H2Icon,
-      },
-      {
-        number: 3,
-        tag: H3,
-        svg: H3Icon,
-      },
-    ];
   }
 
   /**
