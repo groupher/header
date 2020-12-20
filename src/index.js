@@ -21,7 +21,7 @@ import H3Icon from "./icons/H3.svg";
 import EyeBrowIcon from "./icons/EyeBrowPlusIcon.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
-import Ui from "./ui";
+import UI from "./ui";
 import "./index.css";
 
 /**
@@ -107,11 +107,11 @@ export default class Header {
     this.wrapper = null;
     this.eventBus = initEventBus();
 
-    this.ui = new Ui({
+    this.ui = new UI({
       api,
       config,
-      removeEyebrow: this._removeEyebrow.bind(this),
-      removeFooter: this._removeFooter.bind(this),
+      data: this._data,
+      reRender: this.reRender.bind(this),
       // data: this._data,
     });
   }
@@ -126,142 +126,27 @@ export default class Header {
   }
 
   /**
-   * rebuild whole block with eyebrow title active
-   * @public
-   */
-  drawEyebrowTitle() {
-    const wrapper = make("div", this.CSS.wrapper);
-    this.eyebrowElement = this.ui.makeEyebrowTitle(this._data.eyebrowTitle);
-    const eyebrowInput = this.eyebrowElement.querySelector(
-      `.${this.ui.CSS.eyebrowTitleInput}`
-    );
-
-    /**
-     * sync current value to _data
-     */
-    this.listeners.on(
-      eyebrowInput,
-      "input",
-      (e) => {
-        this._data.eyebrowTitle = eyebrowInput.innerHTML;
-      },
-      false
-    );
-
-    /**
-     * if deleteBtn icon clicked, then switch to adder
-     */
-    const deleteBtn = this.eyebrowElement.querySelector(
-      `.${this.CSS.eyebrowDelete}`
-    );
-    this.listeners.on(deleteBtn, "click", () => this._removeEyebrow());
-
-    this._element = this.getTag();
-
-    wrapper.appendChild(this.eyebrowElement);
-    wrapper.appendChild(this._element);
-
-    if (this.footerElement) {
-      wrapper.appendChild(this.footerElement);
-    }
-
-    this.wrapper.replaceWith(wrapper);
-    this.wrapper = wrapper;
-
-    this.ui.focusInput(EYEBROW, this.eyebrowElement);
-  }
-
-  /**
-   * rebuild whole block with footer title active
-   * @public
-   */
-  drawFooterTitle() {
-    const wrapper = make("div", this.CSS.wrapper);
-    this.footerElement = this.ui.makeFooterTitle(this._data.footerTitle);
-    const footerInput = this.footerElement.querySelector(
-      `.${this.ui.CSS.footerTitleInput}`
-    );
-
-    /**
-     * sync current value to _data
-     */
-    this.listeners.on(
-      footerInput,
-      "input",
-      (e) => {
-        this._data.footerTitle = footerInput.innerHTML;
-      },
-      false
-    );
-
-    /**
-     * if deleteBtn icon clicked, then switch to adder
-     */
-    const deleteBtn = this.footerElement.querySelector(
-      `.${this.CSS.footerDelete}`
-    );
-
-    this.listeners.on(deleteBtn, "click", () => this._removeFooter());
-
-    this._element = this.getTag();
-
-    if (this.eyebrowElement) {
-      wrapper.appendChild(this.eyebrowElement);
-    }
-    wrapper.appendChild(this._element);
-    wrapper.appendChild(this.footerElement);
-
-    this.wrapper.replaceWith(wrapper);
-    this.wrapper = wrapper;
-
-    this.ui.focusInput(FOOTER, this.footerElement);
-  }
-
-  /**
-   * remove eyebrow element
-   *
-   * @memberof Header
-   * @private
-   */
-  _removeEyebrow() {
-    this.eyebrowElement.remove();
-    this.eyebrowElement = null;
-    delete this._data.eyebrowTitle;
-  }
-
-  /**
-   * remove eyebrow element
-   *
-   * @memberof Header
-   * @private
-   */
-  _removeFooter() {
-    this.footerElement.remove();
-    this.footerElement = null;
-    delete this._data.footerTitle;
-  }
-
-  /**
    * Return Tool's view
    * @returns {HTMLHeadingElement}
    * @public
    */
   render() {
-    const { level, eyebrowTitle, footerTitle, text } = this._data;
-
-    this.wrapper = make("div", this.CSS.wrapper);
-    if (level === 1) {
-      if (eyebrowTitle) this.drawEyebrowTitle();
-      if (footerTitle) this.drawFooterTitle();
-
-      if (this.eyebrowElement) this.wrapper.appendChild(this.eyebrowElement);
-      this.wrapper.appendChild(this._element);
-      if (this.footerElement) this.wrapper.appendChild(this.footerElement);
-    } else {
-      this.wrapper.appendChild(this._element);
-    }
-
+    this.wrapper = this.ui.render();
     return this.wrapper;
+  }
+
+  /**
+   * replace element wrapper with new html element
+   * @param {HTMLElement} node
+   */
+  reRender(node) {
+    this.wrapper.replaceWith(node);
+    this.wrapper = node;
+
+    console.log("# reRender -> ", this.wrapper);
+
+    this.api.tooltip.hide();
+    this.api.toolbar.close();
   }
 
   /**
@@ -270,142 +155,7 @@ export default class Header {
    * @return {HTMLElement}
    */
   renderSettings() {
-    let holder = document.createElement("DIV");
-
-    /** Add type selectors */
-    LEVELS.forEach((level) => {
-      let selectTypeButton = document.createElement("SPAN");
-
-      clazz.add(selectTypeButton, this.CSS.settingsButton);
-
-      /**
-       * Highlight current level button
-       */
-      if (getCurrentLevel(this._data).number === level.number) {
-        clazz.add(selectTypeButton, this.CSS.settingsButtonActive);
-      }
-
-      /**
-       * Add SVG icon
-       */
-      selectTypeButton.innerHTML = level.svg;
-
-      /**
-       * Save level to its button
-       */
-      selectTypeButton.dataset.level = level.number;
-
-      /**
-       * Set up click handler
-       */
-      this.listeners.on(
-        selectTypeButton,
-        "click",
-        () => {
-          this.setLevel(level.number);
-          this.api.tooltip.hide();
-          this.api.toolbar.close();
-        },
-        false
-      );
-
-      this.api.tooltip.onHover(selectTypeButton, `${level.number}级标题`, {
-        placement: "top",
-      });
-      /**
-       * Append settings button to holder
-       */
-      holder.appendChild(selectTypeButton);
-
-      /**
-       * Save settings buttons
-       */
-      this.settingsButtons.push(selectTypeButton);
-    });
-
-    if (this.data.level === 1) {
-      const eyeBrowButton = this.makeSubtitleSetting(EYEBROW);
-      const footerEditButton = this.makeSubtitleSetting(FOOTER);
-
-      holder.appendChild(eyeBrowButton);
-      holder.appendChild(footerEditButton);
-    }
-
-    return holder;
-  }
-
-  makeSubtitleSetting(type = EYEBROW) {
-    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
-    const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
-    const title = type === EYEBROW ? "眉标题" : "脚标题";
-
-    const element = make("span", this.CSS.settingsButton, {
-      innerHTML: icon,
-    });
-
-    const currentState = this.ui.isSubtitleInputActive(type, target);
-    /**
-     * Highlight current level button
-     */
-    if (currentState) {
-      clazz.add(element, this.CSS.settingsButtonActive);
-    }
-
-    this.api.tooltip.onHover(element, title, { placement: "top" });
-    this.listeners.on(
-      element,
-      "click",
-      () => {
-        this.handleSubtitleSettingClick(type);
-        this.api.tooltip.hide();
-        this.api.toolbar.close();
-      },
-      false
-    );
-
-    return element;
-  }
-
-  /**
-   * handle subtitle click from settings menu
-   * @param level
-   * @return void
-   */
-  handleSubtitleSettingClick(type) {
-    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
-
-    const isActive = this.ui.isSubtitleInputActive(type, target);
-    console.log("currentState: ", isActive);
-
-    if (type === EYEBROW) {
-      isActive ? this._removeEyebrow() : this.drawEyebrowTitle();
-      return;
-    }
-
-    isActive ? this._removeFooter() : this.drawFooterTitle();
-    return;
-  }
-
-  /**
-   * Callback for Block's settings buttons
-   * @param level
-   */
-  setLevel(level) {
-    this.data = {
-      level: level,
-      text: this.data.text,
-    };
-
-    /**
-     * Highlight button by selected level
-     */
-    this.settingsButtons.forEach((button) => {
-      clazz.toggle(
-        button,
-        this.CSS.settingsButtonActive,
-        parseInt(button.dataset.level) === level
-      );
-    });
+    return this.ui.renderSettings();
   }
 
   /**
@@ -623,7 +373,7 @@ export default class Header {
   }
 
   /**
-   * Handle H1-H6 tags on paste to substitute it with header Tool
+   * Handle H1-H3 tags on paste to substitute it with header Tool
    *
    * @param {PasteEvent} event - event with pasted content
    */

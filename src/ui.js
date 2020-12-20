@@ -1,18 +1,36 @@
-import { make } from "@groupher/editor-utils";
+import { make, clazz } from "@groupher/editor-utils";
 
-import { FOOTER } from "./constant";
+import { EYEBROW, FOOTER } from "./constant";
 
 import EyeBrowIcon from "./icons/EyeBrowPlusIcon.svg";
 import DeleteIcon from "./icons/Delete.svg";
 import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
+import { LEVELS, normalizeData, getCurrentLevel } from "./helper";
+
 export default class Ui {
-  constructor({ api, config, removeEyebrow, removeFooter }) {
+  constructor({ api, config, data, reRender }) {
     this.api = api;
     this.config = config;
+    this._data = data;
 
-    this.removeEyebrow = removeEyebrow;
-    this.removeFooter = removeFooter;
+    this._settings = config;
+    this.listeners = api.listeners;
+
+    this.reRender = reRender;
+
+    /**
+     * List of settings buttons
+     * @type {HTMLElement[]}
+     */
+    this.settingsButtons = [];
+    /**
+     * Main Block wrapper
+     * @type {HTMLElement}
+     * @private
+     */
+    this._element = this.getTag();
+    this.wrapper = null;
   }
 
   /**
@@ -21,6 +39,10 @@ export default class Ui {
    */
   get CSS() {
     return {
+      wrapper: "ce-header-wrapper",
+      settingsButton: this.api.styles.settingsButton,
+      settingsButtonActive: this.api.styles.settingsButtonActive,
+      tag: "ce-header",
       // baseBlock: this.api.styles.block,
       addIcon: "ce-header-add-icon",
       eyebrowDelete: "ce-header-eyebrow-delete",
@@ -41,42 +63,252 @@ export default class Ui {
     };
   }
 
-  makeEyebrowAdder() {
-    const eyebrowAdder = make("div", this.CSS.eyebrowAdder);
-    const eyebrowAdderText = make("div", this.CSS.eyebrowAdderText, {
-      innerHTML: "眉标题",
-    });
+  /**
+   * Return Tool's view
+   * @returns {HTMLHeadingElement}
+   * @public
+   */
+  render() {
+    const { level, eyebrowTitle, footerTitle, text } = this._data;
 
-    const eyeBrowIcon = make("div", this.CSS.addIcon, {
-      innerHTML: EyeBrowIcon,
-    });
+    this.wrapper = make("div", this.CSS.wrapper);
 
-    eyebrowAdder.appendChild(eyeBrowIcon);
-    eyebrowAdder.appendChild(eyebrowAdderText);
+    if (level === 1) {
+      if (eyebrowTitle) this._drawEyebrowEl();
+      if (footerTitle) this._drawFooterEl();
 
-    return eyebrowAdder;
+      if (this.eyebrowElement) this.wrapper.appendChild(this.eyebrowElement);
+      this.wrapper.appendChild(this._element);
+      if (this.footerElement) this.wrapper.appendChild(this.footerElement);
+    } else {
+      this.wrapper.appendChild(this._element);
+    }
+
+    return this.wrapper;
+  }
+
+  _reRender() {
+    this.render();
+    return this.reRender(this.wrapper);
   }
 
   /**
-   * make footer adder, include icon and hint text
+   * Create Block's settings block
    *
-   * @returns {HTMLElement}
+   * @return {HTMLElement}
+   */
+  renderSettings() {
+    let Wrapper = document.createElement("DIV");
+
+    /** Add type selectors */
+    LEVELS.forEach((level) => {
+      let SelectTypeButton = document.createElement("SPAN");
+
+      clazz.add(SelectTypeButton, this.CSS.settingsButton);
+
+      /**
+       * Highlight current level button
+       */
+      if (getCurrentLevel(this._data).number === level.number) {
+        clazz.add(SelectTypeButton, this.CSS.settingsButtonActive);
+      }
+
+      /**
+       * Add SVG icon
+       */
+      SelectTypeButton.innerHTML = level.svg;
+
+      /**
+       * Save level to its button
+       */
+      SelectTypeButton.dataset.level = level.number;
+
+      /**
+       * Set up click handler
+       */
+      this.listeners.on(SelectTypeButton, "click", () => {
+        this.setLevel(level.number);
+        this.api.tooltip.hide();
+        this.api.toolbar.close();
+      });
+
+      this.api.tooltip.onHover(SelectTypeButton, `${level.number}级标题`, {
+        placement: "top",
+      });
+      /**
+       * Append settings button to holder
+       */
+      Wrapper.appendChild(SelectTypeButton);
+
+      /**
+       * Save settings buttons
+       */
+      this.settingsButtons.push(SelectTypeButton);
+    });
+
+    if (this._data.level === 1) {
+      const eyeBrowButton = this._drawSubtitleSetting(EYEBROW);
+      const footerEditButton = this._drawSubtitleSetting(FOOTER);
+
+      Wrapper.appendChild(eyeBrowButton);
+      Wrapper.appendChild(footerEditButton);
+    }
+
+    return Wrapper;
+  }
+
+  /**
+   * Callback for Block's settings buttons
+   * @param level
+   */
+  setLevel(level) {
+    // this._data = {
+    //   level: level,
+    //   text: this._data.text,
+    // };
+    this._data.level = level;
+
+    /**
+     * Highlight button by selected level
+     */
+    this.settingsButtons.forEach((button) => {
+      clazz.toggle(
+        button,
+        this.CSS.settingsButtonActive,
+        parseInt(button.dataset.level) === level
+      );
+    });
+  }
+
+  _drawSubtitleSetting(type = EYEBROW) {
+    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
+    const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
+    const title = type === EYEBROW ? "眉标题" : "脚标题";
+
+    const element = make("span", this.CSS.settingsButton, {
+      innerHTML: icon,
+    });
+
+    const currentState = this.isSubtitleInputActive(type, target);
+    /**
+     * Highlight current level button
+     */
+    if (currentState) {
+      clazz.add(element, this.CSS.settingsButtonActive);
+    }
+
+    this.api.tooltip.onHover(element, title, { placement: "top" });
+    this.listeners.on(element, "click", () => {
+      this._handleSubtitleSettingClick(type);
+      this.api.tooltip.hide();
+      this.api.toolbar.close();
+    });
+
+    return element;
+  }
+
+  /**
+   * handle subtitle click from settings menu
+   * @param level
+   * @return void
+   */
+  _handleSubtitleSettingClick(type) {
+    console.log("_handleSubtitleSettingClick: ", type);
+
+    console.log("1");
+    const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
+    const isActive = this.isSubtitleInputActive(type, target);
+
+    console.log("2");
+    if (type === EYEBROW) {
+      isActive ? this._removeEyebrow() : this._drawEyebrowTitle();
+    } else {
+      isActive ? this._removeFooter() : this._drawFooterTitle();
+    }
+
+    this._reRender();
+    return;
+  }
+  /**
+   * rebuild whole block with eyebrow title active
    * @public
    */
-  makeFooterAdder() {
-    const footerAdder = make("div", this.CSS.footerAdder);
-    const footerAdderText = make("div", this.CSS.footerAdderText, {
-      innerHTML: "脚标题",
+  _drawEyebrowEl() {
+    const Wrapper = make("div", this.CSS.wrapper);
+    this._drawEyebrowTitle(this._data.eyebrowTitle);
+    const EyebrowInputEl = this.eyebrowElement.querySelector(
+      `.${this.CSS.eyebrowTitleInput}`
+    );
+
+    /**
+     * sync current value to _data
+     */
+    this.listeners.on(EyebrowInputEl, "input", (e) => {
+      this._data.eyebrowTitle = EyebrowInputEl.innerHTML;
     });
 
-    const footerEditIcon = make("div", this.CSS.addIcon, {
-      innerHTML: FooterEditIcon,
+    /**
+     * if deleteBtn icon clicked, then switch to adder
+     */
+    const DeleteBtnEl = this.eyebrowElement.querySelector(
+      `.${this.CSS.eyebrowDelete}`
+    );
+    this.listeners.on(DeleteBtnEl, "click", () => this._removeEyebrow());
+
+    this._element = this.getTag();
+
+    Wrapper.appendChild(this.eyebrowElement);
+    Wrapper.appendChild(this._element);
+
+    if (this.footerElement) {
+      Wrapper.appendChild(this.footerElement);
+    }
+
+    this.wrapper.replaceWith(Wrapper);
+    this.wrapper = Wrapper;
+
+    // this.focusInput(EYEBROW, this.eyebrowElement);
+  }
+
+  /**
+   * rebuild whole block with footer title active
+   * @public
+   */
+  _drawFooterEl() {
+    const Wrapper = make("div", this.CSS.wrapper);
+    this._drawFooterTitle(this._data.footerTitle);
+    const FooterInputEl = this.footerElement.querySelector(
+      `.${this.CSS.footerTitleInput}`
+    );
+
+    /**
+     * sync current value to _data
+     */
+    this.listeners.on(FooterInputEl, "input", (e) => {
+      this._data.footerTitle = FooterInputEl.innerHTML;
     });
 
-    footerAdder.appendChild(footerEditIcon);
-    footerAdder.appendChild(footerAdderText);
+    /**
+     * if deleteBtn icon clicked, then switch to adder
+     */
+    const DeleteBtnEl = this.footerElement.querySelector(
+      `.${this.CSS.footerDelete}`
+    );
 
-    return footerAdder;
+    this.listeners.on(DeleteBtnEl, "click", () => this._removeFooter());
+
+    this._element = this.getTag();
+
+    if (this.eyebrowElement) {
+      Wrapper.appendChild(this.eyebrowElement);
+    }
+    Wrapper.appendChild(this._element);
+    Wrapper.appendChild(this.footerElement);
+
+    this.wrapper.replaceWith(Wrapper);
+    this.wrapper = Wrapper;
+
+    // this.focusInput(FOOTER, this.footerElement);
   }
 
   /**
@@ -85,43 +317,43 @@ export default class Ui {
    * @returns {HTMLElement}
    * @public
    */
-  makeEyebrowTitle(text) {
+  _drawEyebrowTitle(text = "") {
     const css = this.CSS.eyebrowTitle;
     const inputCSS = this.CSS.eyebrowTitleInput;
 
     const placeholder = "";
-    const titleEl = make("div", css);
+    this.eyebrowElement = make("div", css);
 
-    const titleInput = make("div", inputCSS, {
+    const TitleInputEl = make("div", inputCSS, {
       contentEditable: true,
-      innerHTML: text || placeholder,
+      innerHTML: text,
       placeholder: "眉标题",
     });
 
     // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
-    titleInput.addEventListener("focus", (e) => {
+    TitleInputEl.addEventListener("focus", (e) => {
       const value = e.target.innerHTML;
       value === "" && (e.target.innerHTML = placeholder);
     });
 
-    titleInput.addEventListener("blur", (e) => {
+    TitleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        this.removeEyebrow();
+        this._removeEyebrow();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }
     });
 
-    const deleteBtn = make("div", this.CSS.eyebrowDelete, {
+    const DeleteBtn = make("div", this.CSS.eyebrowDelete, {
       innerHTML: DeleteIcon,
     });
 
-    titleEl.appendChild(deleteBtn);
-    titleEl.appendChild(titleInput);
+    this.eyebrowElement.appendChild(DeleteBtn);
+    this.eyebrowElement.appendChild(TitleInputEl);
 
-    return titleEl;
+    return this.eyebrowElement;
   }
 
   /**
@@ -130,42 +362,42 @@ export default class Ui {
    * @returns {HTMLElement}
    * @public
    */
-  makeFooterTitle(text) {
+  _drawFooterTitle(text = "") {
     const css = this.CSS.footerTitle;
 
     const placeholder = "";
-    const title = make("div", css);
+    this.footerElement = make("div", css);
 
-    const titleInput = make("div", this.CSS.footerTitleInput, {
+    const TitleInputEl = make("div", this.CSS.footerTitleInput, {
       contentEditable: true,
-      innerHTML: text || placeholder,
-      "data-placeholder": text || placeholder,
+      innerHTML: text,
+      placeholder: "脚标题",
     });
 
     // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
-    titleInput.addEventListener("focus", (e) => {
+    TitleInputEl.addEventListener("focus", (e) => {
       const value = e.target.innerHTML;
       value === "" && (e.target.innerHTML = placeholder);
     });
 
-    titleInput.addEventListener("blur", (e) => {
+    TitleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
-        this.removeFooter();
+        this._removeFooter();
       } else {
         value === "" && (e.target.innerHTML = placeholder);
       }
     });
 
-    const deleteBtn = make("div", this.CSS.footerDelete, {
+    const DeleteBtn = make("div", this.CSS.footerDelete, {
       innerHTML: DeleteIcon,
     });
 
-    title.appendChild(deleteBtn);
-    title.appendChild(titleInput);
+    this.footerElement.appendChild(DeleteBtn);
+    this.footerElement.appendChild(TitleInputEl);
 
-    return title;
+    return this.footerElement;
   }
 
   /**
@@ -179,8 +411,8 @@ export default class Ui {
     const css =
       type === FOOTER ? this.CSS.footerTitleInput : this.CSS.eyebrowTitleInput;
 
-    const footerInput = element.querySelector(`.${css}`);
-    footerInput.focus();
+    const InputEl = element.querySelector(`.${css}`);
+    InputEl.focus();
   }
 
   isSubtitleInputActive(type, element) {
@@ -199,4 +431,65 @@ export default class Ui {
   //   this.setData(data);
   //   return data;
   // }
+  /**
+   * Get tag for target level
+   * By default returns second-leveled header
+   * @return {HTMLElement}
+   */
+  getTag() {
+    /**
+     * Create element for current Block's level
+     */
+    let tag = document.createElement(getCurrentLevel(this._data).tag);
+
+    /**
+     * Add text to block
+     */
+    tag.innerHTML = this._data.text || "";
+
+    /**
+     * Add styles class
+     */
+    clazz.add(tag, this.CSS.tag);
+
+    /**
+     * Make tag editable
+     */
+    tag.contentEditable = "true";
+
+    /**
+     * Add Placeholder
+     */
+    tag.dataset.placeholder = this._settings.placeholder || "";
+
+    this.listeners.on(tag, "input", (ev) => {
+      this._data.text = ev.target.innerText;
+    });
+
+    return tag;
+  }
+
+  /**
+   * remove eyebrow element
+   *
+   * @memberof Header
+   * @private
+   */
+  _removeEyebrow() {
+    this.eyebrowElement.remove();
+    this.eyebrowElement = null;
+    delete this._data.eyebrowTitle;
+  }
+
+  /**
+   * remove eyebrow element
+   *
+   * @memberof Header
+   * @private
+   */
+  _removeFooter() {
+    this.footerElement.remove();
+    this.footerElement = null;
+    delete this._data.footerTitle;
+  }
 }

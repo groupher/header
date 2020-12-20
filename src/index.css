@@ -151,6 +151,12 @@
   outline: none;
 }
 
+.ce-header-footer-title-input[placeholder]:empty:before {
+  content: attr(placeholder);
+  font-style: italic;
+  color: #c1c1c1;
+}
+
 .ce-header-footer-title:empty:before {
   content: attr(data-placeholder);
 }
