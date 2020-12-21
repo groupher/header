@@ -80,9 +80,15 @@ export default class UI {
       if (eyebrowTitle !== undefined) this._drawEyebrowEl();
       if (footerTitle !== undefined) this._drawFooterEl();
 
-      if (this.eyebrowElement) this.wrapper.appendChild(this.eyebrowElement);
+      if (this.eyebrowElement) {
+        this.wrapper.appendChild(this.eyebrowElement);
+      }
+
       this.wrapper.appendChild(this._element);
-      if (this.footerElement) this.wrapper.appendChild(this.footerElement);
+
+      if (this.footerElement) {
+        this.wrapper.appendChild(this.footerElement);
+      }
     } else {
       delete this._data.eyebrowTitle;
       delete this._data.footerTitle;
