@@ -7,6 +7,7 @@
 
 .ce-header-wrapper h1 {
   position: relative;
+  font-size: 28px;
 }
 
 .ce-header-wrapper h2 {
@@ -90,8 +91,8 @@
   width: 100%;
   font-size: 16px;
   line-height: 24px;
+  margin-bottom: 18px;
   outline: none;
-  margin-bottom: 20px;
 }
 
 .ce-header-eyebrow-title {
