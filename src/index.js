@@ -83,16 +83,6 @@ export default class Header {
     this._data = normalizeData(data);
 
     /**
-     * List of settings buttons
-     * @type {HTMLElement[]}
-     */
-    this.settingsButtons = [];
-
-    // TODO:  document this
-    this.eyebrowElement = null;
-    this.footerElement = null;
-
-    /**
      * Main Block wrapper
      * @type {HTMLElement}
      * @private
@@ -218,33 +208,6 @@ export default class Header {
   }
 
   /**
-   * restore eyebrow & footer title
-   * @private
-   */
-  restoreSubTitles() {
-    if (this.eyebrowElement) {
-      this.eyebrowElement.style.display = "flex";
-    }
-
-    if (this.footerElement) {
-      this.footerElement.style.display = "flex";
-    }
-  }
-
-  /**
-   * show eyebrow & footer title
-   * @private
-   */
-  removeSubTitles() {
-    if (this.eyebrowElement) {
-      this.eyebrowElement.style.display = "none";
-    }
-    if (this.footerElement) {
-      this.footerElement.style.display = "none";
-    }
-  }
-
-  /**
    * Store data in plugin:
    * - at the this._data property
    * - at the HTML
@@ -255,12 +218,6 @@ export default class Header {
   set data(data) {
     console.log("header set data: ", data);
     this._data = this.normalizeData(data);
-
-    if (data.level !== 1) {
-      this.removeSubTitles();
-    } else {
-      this.restoreSubTitles();
-    }
 
     /**
      * If level is set and block in DOM
