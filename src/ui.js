@@ -74,8 +74,6 @@ export default class UI {
     this.wrapper = make("div", this.CSS.wrapper);
     this._element = this.getTag();
 
-    console.log("#render> this._data", this._data);
-
     if (level === 1) {
       if (eyebrowTitle !== undefined) this._drawEyebrowEl();
       if (footerTitle !== undefined) this._drawFooterEl();
@@ -194,8 +192,6 @@ export default class UI {
   }
 
   _drawSubtitleSetting(type = EYEBROW) {
-    console.log("> in settings: ", this._data);
-
     const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
     const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
     const title = type === EYEBROW ? "眉标题" : "脚标题";
@@ -230,9 +226,6 @@ export default class UI {
   _handleSubtitleSettingClick(type) {
     const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
     const isActive = this.isSubtitleInputActive(type, target);
-
-    console.log("> do_handleSubtitleSettingClick type: ", type);
-    console.log("> before remove: ", this._data);
 
     if (type === EYEBROW) {
       isActive ? this._removeEyebrow() : this._drawEyebrowTitle();
