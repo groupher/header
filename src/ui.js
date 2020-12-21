@@ -14,6 +14,8 @@ export default class UI {
     this.config = config;
     this._data = data;
 
+    console.log("UI this._data: ", this._data);
+
     this._settings = config;
     this.listeners = api.listeners;
 

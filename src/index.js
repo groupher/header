@@ -181,9 +181,6 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
-    console.log("# save: ", this._data);
-    console.log("# ui.save: ", this.ui._data);
-
     return this._data;
   }
 

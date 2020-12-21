@@ -50,8 +50,13 @@ export const normalizeData = (data) => {
   newData.text = data.text || "";
   newData.level = parseInt(data.level) || DEFAULT_LEVEL.number;
 
-  newData.eyebrowTitle = data.eyebrowTitle || "";
-  newData.footerTitle = data.footerTitle || "";
+  if (data.eyebrowTitle) {
+    newData.eyebrowTitle = data.eyebrowTitle;
+  }
+
+  if (data.footerTitle) {
+    newData.footerTitle = data.footerTitle;
+  }
 
   return newData;
 };
