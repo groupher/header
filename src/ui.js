@@ -8,7 +8,7 @@ import FooterEditIcon from "./icons/FooterEditIcon.svg";
 
 import { LEVELS, normalizeData, getCurrentLevel } from "./helper";
 
-export default class Ui {
+export default class UI {
   constructor({ api, config, data, reRender }) {
     this.api = api;
     this.config = config;
@@ -29,7 +29,7 @@ export default class Ui {
      * @type {HTMLElement}
      * @private
      */
-    this._element = this.getTag();
+    this._element = null; //  this.getTag();
     this.wrapper = null;
   }
 
@@ -72,15 +72,24 @@ export default class Ui {
     const { level, eyebrowTitle, footerTitle, text } = this._data;
 
     this.wrapper = make("div", this.CSS.wrapper);
+    this._element = this.getTag();
+
+    console.log("#render> this._data", this._data);
 
     if (level === 1) {
-      if (eyebrowTitle) this._drawEyebrowEl();
-      if (footerTitle) this._drawFooterEl();
+      if (eyebrowTitle !== undefined) this._drawEyebrowEl();
+      if (footerTitle !== undefined) this._drawFooterEl();
 
       if (this.eyebrowElement) this.wrapper.appendChild(this.eyebrowElement);
       this.wrapper.appendChild(this._element);
       if (this.footerElement) this.wrapper.appendChild(this.footerElement);
     } else {
+      delete this._data.eyebrowTitle;
+      delete this._data.footerTitle;
+
+      this.eyebrowElement = null;
+      this.footerElement = null;
+
       this.wrapper.appendChild(this._element);
     }
 
@@ -89,6 +98,8 @@ export default class Ui {
 
   _reRender() {
     this.render();
+    this.api.tooltip.hide();
+    this.api.toolbar.close();
     return this.reRender(this.wrapper);
   }
 
@@ -130,6 +141,8 @@ export default class Ui {
         this.setLevel(level.number);
         this.api.tooltip.hide();
         this.api.toolbar.close();
+
+        this._reRender();
       });
 
       this.api.tooltip.onHover(SelectTypeButton, `${level.number}级标题`, {
@@ -181,6 +194,8 @@ export default class Ui {
   }
 
   _drawSubtitleSetting(type = EYEBROW) {
+    console.log("> in settings: ", this._data);
+
     const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
     const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
     const title = type === EYEBROW ? "眉标题" : "脚标题";
@@ -213,13 +228,12 @@ export default class Ui {
    * @return void
    */
   _handleSubtitleSettingClick(type) {
-    console.log("_handleSubtitleSettingClick: ", type);
-
-    console.log("1");
     const target = type === EYEBROW ? this.eyebrowElement : this.footerElement;
     const isActive = this.isSubtitleInputActive(type, target);
 
-    console.log("2");
+    console.log("> do_handleSubtitleSettingClick type: ", type);
+    console.log("> before remove: ", this._data);
+
     if (type === EYEBROW) {
       isActive ? this._removeEyebrow() : this._drawEyebrowTitle();
     } else {
@@ -229,6 +243,7 @@ export default class Ui {
     this._reRender();
     return;
   }
+
   /**
    * rebuild whole block with eyebrow title active
    * @public
@@ -321,7 +336,9 @@ export default class Ui {
     const css = this.CSS.eyebrowTitle;
     const inputCSS = this.CSS.eyebrowTitleInput;
 
-    const placeholder = "";
+    // set eyebrowTitle to '', otherwise reRender will skip to draw in next render
+    this._data.eyebrowTitle = text;
+
     this.eyebrowElement = make("div", css);
 
     const TitleInputEl = make("div", inputCSS, {
@@ -330,19 +347,11 @@ export default class Ui {
       placeholder: "眉标题",
     });
 
-    // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
-    TitleInputEl.addEventListener("focus", (e) => {
-      const value = e.target.innerHTML;
-      value === "" && (e.target.innerHTML = placeholder);
-    });
-
     TitleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
         this._removeEyebrow();
-      } else {
-        value === "" && (e.target.innerHTML = placeholder);
       }
     });
 
@@ -365,7 +374,9 @@ export default class Ui {
   _drawFooterTitle(text = "") {
     const css = this.CSS.footerTitle;
 
-    const placeholder = "";
+    // set footerTitle to '', otherwise reRender will skip to draw in next render
+    this._data.footerTitle = text;
+
     this.footerElement = make("div", css);
 
     const TitleInputEl = make("div", this.CSS.footerTitleInput, {
@@ -374,19 +385,11 @@ export default class Ui {
       placeholder: "脚标题",
     });
 
-    // see https://htmldom.dev/placeholder-for-a-contenteditable-element/
-    TitleInputEl.addEventListener("focus", (e) => {
-      const value = e.target.innerHTML;
-      value === "" && (e.target.innerHTML = placeholder);
-    });
-
     TitleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
         this._removeFooter();
-      } else {
-        value === "" && (e.target.innerHTML = placeholder);
       }
     });
 
@@ -396,6 +399,9 @@ export default class Ui {
 
     this.footerElement.appendChild(DeleteBtn);
     this.footerElement.appendChild(TitleInputEl);
+
+    // set footerTitle to '', otherwise reRender will skip to draw
+    // this._data.footerTitle = "";
 
     return this.footerElement;
   }

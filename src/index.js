@@ -1,13 +1,7 @@
 /**
  * Build styles
  */
-import {
-  initEventBus,
-  EVENTS,
-  make,
-  clazz,
-  moveCaretToEnd,
-} from "@groupher/editor-utils";
+import { initEventBus, EVENTS, clazz } from "@groupher/editor-utils";
 
 import { H1, H2, H3, EYEBROW, FOOTER } from "./constant";
 import { LEVELS, normalizeData, getCurrentLevel } from "./helper";
@@ -142,11 +136,6 @@ export default class Header {
   reRender(node) {
     this.wrapper.replaceWith(node);
     this.wrapper = node;
-
-    console.log("# reRender -> ", this.wrapper);
-
-    this.api.tooltip.hide();
-    this.api.toolbar.close();
   }
 
   /**
@@ -192,34 +181,10 @@ export default class Header {
    * @public
    */
   save(toolsContent) {
-    const { level } = this._data;
+    console.log("# save: ", this._data);
+    console.log("# ui.save: ", this.ui._data);
 
-    const data = {
-      text: toolsContent.querySelector(`.${this.CSS.tag}`).innerHTML,
-      level: getCurrentLevel(this._data).number,
-    };
-
-    if (level === 1 && this.eyebrowElement) {
-      const eyebrowInput = this.eyebrowElement.querySelector(
-        `.${this.ui.CSS.eyebrowTitleInput}`
-      );
-
-      if (eyebrowInput && eyebrowInput.innerText.trim() !== "") {
-        data.eyebrowTitle = eyebrowInput.innerText;
-      }
-    }
-
-    if (level === 1 && this.footerElement) {
-      const footerInput = this.footerElement.querySelector(
-        `.${this.ui.CSS.footerTitleInput}`
-      );
-
-      if (footerInput && footerInput.innerText.trim() !== "") {
-        data.footerTitle = footerInput.innerText;
-      }
-    }
-
-    return data;
+    return this._data;
   }
 
   /**
@@ -247,6 +212,8 @@ export default class Header {
    * @private
    */
   get data() {
+    console.log("# get data: ", this._data);
+
     this._data.text = this._element.innerHTML;
     this._data.level = getCurrentLevel(this._data).number;
 
@@ -289,6 +256,7 @@ export default class Header {
    * @private
    */
   set data(data) {
+    console.log("header set data: ", data);
     this._data = this.normalizeData(data);
 
     if (data.level !== 1) {
