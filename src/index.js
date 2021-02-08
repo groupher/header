@@ -21,8 +21,10 @@ import "./index.css";
 /**
  * @typedef {Object} HeaderData
  * @description Tool's input and output data format
- * @property {String} text — Header's content
- * @property {number} level - Header's level from 1 to 3
+ * @property {String} text — Header's content, HTML string
+ * @property {Number} level - Header's level from 1 to 3
+ * @property {String} eyebrowTitle - optional, eyebrow title,
+ * @property {String} footerTitle - optional, footer title
  */
 
 /**
