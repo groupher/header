@@ -14,8 +14,6 @@ export default class UI {
     this.config = config;
     this._data = data;
 
-    console.log("UI this._data: ", this._data);
-
     this._settings = config;
     this.listeners = api.listeners;
 
@@ -115,35 +113,35 @@ export default class UI {
    * @return {HTMLElement}
    */
   renderSettings() {
-    let Wrapper = document.createElement("DIV");
+    let wrapperEl = document.createElement("DIV");
 
     /** Add type selectors */
     LEVELS.forEach((level) => {
-      let SelectTypeButton = document.createElement("SPAN");
+      let selectTypeButtonEl = document.createElement("SPAN");
 
-      clazz.add(SelectTypeButton, this.CSS.settingsButton);
+      clazz.add(selectTypeButtonEl, this.CSS.settingsButton);
 
       /**
        * Highlight current level button
        */
       if (getCurrentLevel(this._data).number === level.number) {
-        clazz.add(SelectTypeButton, this.CSS.settingsButtonActive);
+        clazz.add(selectTypeButtonEl, this.CSS.settingsButtonActive);
       }
 
       /**
        * Add SVG icon
        */
-      SelectTypeButton.innerHTML = level.svg;
+      selectTypeButtonEl.innerHTML = level.svg;
 
       /**
        * Save level to its button
        */
-      SelectTypeButton.dataset.level = level.number;
+      selectTypeButtonEl.dataset.level = level.number;
 
       /**
        * Set up click handler
        */
-      this.listeners.on(SelectTypeButton, "click", () => {
+      this.listeners.on(selectTypeButtonEl, "click", () => {
         this.setLevel(level.number);
         this.api.tooltip.hide();
         this.api.toolbar.close();
@@ -151,29 +149,29 @@ export default class UI {
         this._reRender();
       });
 
-      this.api.tooltip.onHover(SelectTypeButton, `${level.number}级标题`, {
+      this.api.tooltip.onHover(selectTypeButtonEl, `${level.number}级标题`, {
         placement: "top",
       });
       /**
        * Append settings button to holder
        */
-      Wrapper.appendChild(SelectTypeButton);
+      wrapperEl.appendChild(selectTypeButtonEl);
 
       /**
        * Save settings buttons
        */
-      this.settingsButtons.push(SelectTypeButton);
+      this.settingsButtons.push(selectTypeButtonEl);
     });
 
     if (this._data.level === 1) {
       const eyeBrowButton = this._drawSubtitleSetting(EYEBROW);
       const footerEditButton = this._drawSubtitleSetting(FOOTER);
 
-      Wrapper.appendChild(eyeBrowButton);
-      Wrapper.appendChild(footerEditButton);
+      wrapperEl.appendChild(eyeBrowButton);
+      wrapperEl.appendChild(footerEditButton);
     }
 
-    return Wrapper;
+    return wrapperEl;
   }
 
   /**
@@ -204,7 +202,7 @@ export default class UI {
     const icon = type === EYEBROW ? EyeBrowIcon : FooterEditIcon;
     const title = type === EYEBROW ? "眉标题" : "脚标题";
 
-    const element = make("span", this.CSS.settingsButton, {
+    const buttonEl = make("span", this.CSS.settingsButton, {
       innerHTML: icon,
     });
 
@@ -213,17 +211,17 @@ export default class UI {
      * Highlight current level button
      */
     if (currentState) {
-      clazz.add(element, this.CSS.settingsButtonActive);
+      clazz.add(buttonEl, this.CSS.settingsButtonActive);
     }
 
-    this.api.tooltip.onHover(element, title, { placement: "top" });
-    this.listeners.on(element, "click", () => {
+    this.api.tooltip.onHover(buttonEl, title, { placement: "top" });
+    this.listeners.on(buttonEl, "click", () => {
       this._handleSubtitleSettingClick(type);
       this.api.tooltip.hide();
       this.api.toolbar.close();
     });
 
-    return element;
+    return buttonEl;
   }
 
   /**
@@ -250,7 +248,7 @@ export default class UI {
    * @public
    */
   _drawEyebrowEl() {
-    const Wrapper = make("div", this.CSS.wrapper);
+    const wrapperEl = make("div", this.CSS.wrapper);
     this._drawEyebrowTitle(this._data.eyebrowTitle);
     const EyebrowInputEl = this.eyebrowElement.querySelector(
       `.${this.CSS.eyebrowTitleInput}`
@@ -273,15 +271,15 @@ export default class UI {
 
     this._element = this.getTag();
 
-    Wrapper.appendChild(this.eyebrowElement);
-    Wrapper.appendChild(this._element);
+    wrapperEl.appendChild(this.eyebrowElement);
+    wrapperEl.appendChild(this._element);
 
     if (this.footerElement) {
-      Wrapper.appendChild(this.footerElement);
+      wrapperEl.appendChild(this.footerElement);
     }
 
-    this.wrapper.replaceWith(Wrapper);
-    this.wrapper = Wrapper;
+    this.wrapper.replaceWith(wrapperEl);
+    this.wrapper = wrapperEl;
 
     // this.focusInput(EYEBROW, this.eyebrowElement);
   }
@@ -291,7 +289,7 @@ export default class UI {
    * @public
    */
   _drawFooterEl() {
-    const Wrapper = make("div", this.CSS.wrapper);
+    const wrapperEl = make("div", this.CSS.wrapper);
     this._drawFooterTitle(this._data.footerTitle);
     const FooterInputEl = this.footerElement.querySelector(
       `.${this.CSS.footerTitleInput}`
@@ -316,13 +314,13 @@ export default class UI {
     this._element = this.getTag();
 
     if (this.eyebrowElement) {
-      Wrapper.appendChild(this.eyebrowElement);
+      wrapperEl.appendChild(this.eyebrowElement);
     }
-    Wrapper.appendChild(this._element);
-    Wrapper.appendChild(this.footerElement);
+    wrapperEl.appendChild(this._element);
+    wrapperEl.appendChild(this.footerElement);
 
-    this.wrapper.replaceWith(Wrapper);
-    this.wrapper = Wrapper;
+    this.wrapper.replaceWith(wrapperEl);
+    this.wrapper = wrapperEl;
 
     // this.focusInput(FOOTER, this.footerElement);
   }
@@ -342,13 +340,13 @@ export default class UI {
 
     this.eyebrowElement = make("div", css);
 
-    const TitleInputEl = make("div", inputCSS, {
+    const titleInputEl = make("div", inputCSS, {
       contentEditable: true,
       innerHTML: text,
       placeholder: "眉标题",
     });
 
-    TitleInputEl.addEventListener("blur", (e) => {
+    titleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
@@ -356,12 +354,12 @@ export default class UI {
       }
     });
 
-    const DeleteBtn = make("div", this.CSS.eyebrowDelete, {
+    const deleteBtn = make("div", this.CSS.eyebrowDelete, {
       innerHTML: DeleteIcon,
     });
 
-    this.eyebrowElement.appendChild(DeleteBtn);
-    this.eyebrowElement.appendChild(TitleInputEl);
+    this.eyebrowElement.appendChild(deleteBtn);
+    this.eyebrowElement.appendChild(titleInputEl);
 
     return this.eyebrowElement;
   }
@@ -380,13 +378,13 @@ export default class UI {
 
     this.footerElement = make("div", css);
 
-    const TitleInputEl = make("div", this.CSS.footerTitleInput, {
+    const titleInputEl = make("div", this.CSS.footerTitleInput, {
       contentEditable: true,
       innerHTML: text,
       placeholder: "脚标题",
     });
 
-    TitleInputEl.addEventListener("blur", (e) => {
+    titleInputEl.addEventListener("blur", (e) => {
       const value = e.target.innerHTML;
       // 如果点击了但是没有输入，那么重新恢复成 Adder 的样子
       if (value.trim() === "") {
@@ -394,12 +392,12 @@ export default class UI {
       }
     });
 
-    const DeleteBtn = make("div", this.CSS.footerDelete, {
+    const deleteBtn = make("div", this.CSS.footerDelete, {
       innerHTML: DeleteIcon,
     });
 
-    this.footerElement.appendChild(DeleteBtn);
-    this.footerElement.appendChild(TitleInputEl);
+    this.footerElement.appendChild(deleteBtn);
+    this.footerElement.appendChild(titleInputEl);
 
     // set footerTitle to '', otherwise reRender will skip to draw
     // this._data.footerTitle = "";
